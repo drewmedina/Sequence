@@ -1,14 +1,16 @@
 import React from 'react'
 import { useState } from 'react';
 import { useAuth } from "../Auth/AuthContext";
+import { useNavigate } from 'react-router-dom';
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const {signup} = useAuth()
+    const navigate = useNavigate(); 
     const onSubmit = async (e) => {
         e.preventDefault()
         await signup(email, password);
-
+        navigate("/");
       }
   return (
     <main >        
