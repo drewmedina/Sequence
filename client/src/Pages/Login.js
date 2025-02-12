@@ -1,12 +1,13 @@
 import React from 'react'
 import { useState } from 'react';
-import {useAuth} from "../Auth/AuthContext";
+import { useAuth } from "../Auth/AuthContext";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const signup = useAuth()
     const onSubmit = async (e) => {
         e.preventDefault()
-        AuthContext.signUp(email, password);
+        await signup(email, password);
 
       }
   return (
