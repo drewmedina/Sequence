@@ -10,7 +10,7 @@ import Home from './Pages/Home';
 import Login from './Pages/Login';
 import {useAuth} from "./Auth/AuthContext"
 function App() {
-  // const { currentUser } = useAuth();
+// const { currentUser } = useAuth();
   const ProtectedRoute = ({ children }) => {
     if (true) {
       return <Navigate to="/login" />;
@@ -32,7 +32,7 @@ function App() {
     },
   ]);
   return (
-    <div>Hello World!</div>
+    <Login/>
   );
 
 
