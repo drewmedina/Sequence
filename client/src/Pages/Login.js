@@ -4,7 +4,7 @@ import { useAuth } from "../Auth/AuthContext";
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const signup = useAuth()
+    const {signup} = useAuth()
     const onSubmit = async (e) => {
         e.preventDefault()
         await signup(email, password);
