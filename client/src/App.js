@@ -1,25 +1,41 @@
 import logo from './logo.svg';
 import './App.css';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Navigate,
+} from 'react-router-dom'
 
+import Home from './Pages/Home';
+import Login from './Pages/Login';
+import {useAuth} from "./Auth/AuthContext"
 function App() {
+  // const { currentUser } = useAuth();
+  const ProtectedRoute = ({ children }) => {
+    if (true) {
+      return <Navigate to="/login" />;
+    }
+    return children;
+  }
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element :(
+        <ProtectedRoute>
+          <Home/>
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/login",
+      element: <Login/>,
+    },
+  ]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div>Hello World!</div>
   );
+
+
 }
 
 export default App;
