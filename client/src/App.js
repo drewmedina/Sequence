@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import './App.css';
 import {
   createBrowserRouter,
@@ -10,12 +9,9 @@ import Home from './Pages/Home';
 import Login from './Pages/Login';
 import {useAuth} from "./Auth/AuthContext"
 function App() {
-const { currentUser } = useAuth();
-  const ProtectedRoute = ({ children }) => {
-    if (!currentUser) {
-      return <Navigate to="/login" />;
-    }
-    return children;
+    const ProtectedRoute = ({ children }) => {
+    const { currentUser } = useAuth();
+    return currentUser ? children : <Navigate to="/login" />;
   }
   const router = createBrowserRouter([
     {
@@ -33,7 +29,7 @@ const { currentUser } = useAuth();
   ]);
   return (
     <AuthProvider>
-      <Login/>
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 
