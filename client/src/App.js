@@ -5,14 +5,14 @@ import {
   RouterProvider,
   Navigate,
 } from 'react-router-dom'
-
+import {AuthProvider} from './Auth/AuthContext';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import {useAuth} from "./Auth/AuthContext"
 function App() {
-// const { currentUser } = useAuth();
+const { currentUser } = useAuth();
   const ProtectedRoute = ({ children }) => {
-    if (true) {
+    if (!currentUser) {
       return <Navigate to="/login" />;
     }
     return children;
@@ -32,7 +32,9 @@ function App() {
     },
   ]);
   return (
-    <Login/>
+    <AuthProvider>
+      <Login/>
+    </AuthProvider>
   );
 
 
