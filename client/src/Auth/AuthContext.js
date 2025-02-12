@@ -23,12 +23,8 @@ export function useAuth() {
         });
     }
     
-    function signUp(email, password){
-        createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-            setCurrentUser(userCredential.user);
-        }).catch((error) => {
-            console.log(error);
-        })
+    function signup(email, password){
+        return auth.createUserWithEmailAndPassword(email, password)
     }
     
     useEffect(() => {
@@ -41,7 +37,7 @@ export function useAuth() {
 
     const value = {
         currentUser,
-        signUp,
+        signup,
         signIn
       }
 
