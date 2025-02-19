@@ -1,24 +1,29 @@
-# Logs
-logs
-*.log
+# Node modules (large files, dependencies)
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+.pnpm-debug.log*
+package-lock.json
 
-node_modules
-dist
-dist-ssr
-*.local
+# Build files (generated output)
+dist/
+.vite/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Environment variables (API keys, secrets)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Ignore Firebase config (contains API keys)
+src/Firebase/firebase.js
+
+# Logs & cache
+logs
+*.log
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+.vscode/
+.idea/
+*.swp
