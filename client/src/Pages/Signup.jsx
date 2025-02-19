@@ -14,8 +14,14 @@ function Signup() {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        await signup(email, password);
-        navigate("/");
+        try{
+            await signup(email, username, password, confirmpassword);
+            navigate("/");
+        }
+        catch(e){
+            alert(e.message);
+        }
+        
     };
     const loginButton = async (e) => {
         e.preventDefault();
