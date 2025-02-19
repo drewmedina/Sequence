@@ -1,0 +1,25 @@
+# Node modules (avoid pushing dependencies)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+package-lock.json
+
+# Logs & cache
+logs/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Server build files (if applicable)
+dist/
+
+# Ignore sensitive environment variables (API keys, database credentials)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
