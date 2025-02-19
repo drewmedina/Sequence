@@ -1,11 +1,52 @@
-import React from 'react'
-import { useAuth } from '../Auth/AuthContext'
+import React, { useEffect, useState } from "react";
+import socket from "../Firebase/socket";
+import { useAuth } from "../Auth/AuthContext";
+
 function Home() {
-const {currentUser} = useAuth();
+  const { currentUser } = useAuth(); 
+  const [gameCode, setGameCode] = useState(""); 
+  const [lobbyUsers, setLobbyUsers] = useState([]);
+
+  useEffect(() => {
+
+    socket.on("lobby-update", (users) => {
+      setLobbyUsers(users);
+    });
+
+    return () => {
+      socket.off("lobby-update");
+    };
+  }, []);
+
+  const joinLobby = () => {
+    if (gameCode.trim() === "") return; 
+    if (lobbyUsers.includes(currentUser.email)) return;
+  
+    socket.emit("join-lobby", gameCode, currentUser.email);
+  };
+
   return (
-    <div>WELCOME {currentUser.email}
-    <div style={{"width":"20%"}}><iframe src="https://giphy.com/embed/exXM4heNCkJg1TrXMK" width="100%" height="100%" style={{"position":"absolute"}} frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div><p><a href="https://giphy.com/stickers/transparent-exXM4heNCkJg1TrXMK">via GIPHY</a></p></div>
-  )
+    <div>
+      <h2>Welcome, {currentUser?.email}!</h2>
+
+      <div>
+        <input
+          type="text"
+          placeholder="Enter game code"
+          value={gameCode}
+          onChange={(e) => setGameCode(e.target.value)}
+        />
+        <button onClick={joinLobby}>Join Lobby</button>
+      </div>
+
+      <h3>Players in Lobby:</h3>
+      <ul>
+        {lobbyUsers.map((user, index) => (
+          <li key={index}>{user}</li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-export default Home
+export default Home;
