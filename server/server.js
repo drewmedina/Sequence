@@ -29,6 +29,18 @@ const io = new Server(server, {
 const gameLobbies = {};
 
 /**
+ * Generates a unique 6-character game code.
+ * @returns {string} A randomly generated game code.
+ */
+function generateGameCode() {
+  let gameCode;
+  do {
+    gameCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  } while (gameLobbies[gameCode]);
+  return gameCode;
+}
+
+/**
  * Event listener for new WebSocket connections.
  * Runs whenever a client connects to the server via WebSocket.
  */
