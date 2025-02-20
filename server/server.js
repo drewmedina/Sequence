@@ -46,7 +46,13 @@ io.on("connection", (socket) => {
     if (!gameLobbies[gameCode]) {
       gameLobbies[gameCode] = [];
     }
-   
+    
+    if (gameLobbies[gameCode].length >= 3) {
+      // Send an error message to the client (lobby is full)
+      socket.emit("lobby-full", "This lobby is full. Please try another game.");
+      return;
+    }
+
     // Ensure the user is not already in the lobby
     if (!gameLobbies[gameCode].includes(username)) {
       gameLobbies[gameCode].push(username);
