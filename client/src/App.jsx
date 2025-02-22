@@ -36,9 +36,10 @@ function App() {
     <AuthProvider>
       <div style={{"overflow":"hidden", "height":"100vh", "width":"100vw"}}>
         <Header/>
-        <RouterProvider router={router} />
+        <div style={{"height":"94%"}}>
+          <RouterProvider router={router} />
+        </div>
       </div>
-      
     </AuthProvider>
   );
 
