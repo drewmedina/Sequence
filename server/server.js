@@ -48,6 +48,24 @@ io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   /**
+   * Generates a unique game code and creates a new game lobby.
+   * 
+   * @event create-game
+   * @param {string} username - The player who is creating the game.
+   */
+  socket.on("create-game", (username) => {
+    const gameCode = generateGameCode();
+
+    // Create the lobby and add the first player
+    gameLobbies[gameCode] = [username];
+    socket.join(gameCode);
+
+    console.log(`Game created with code ${gameCode} by ${username}`);
+
+    socket.emit("game-created", gameCode);
+  });
+
+  /**
    * Handles when a player joins a game lobby.
    * 
    * @event join-lobby
@@ -55,27 +73,34 @@ io.on("connection", (socket) => {
    * @param {string} username - The username (or email) of the player joining.
    */
   socket.on("join-lobby", (gameCode, username) => {
+    console.log(`User ${username} is trying to join game ${gameCode}`); // Debugging log
+
+    // Check if the game lobby exists
     if (!gameLobbies[gameCode]) {
-      gameLobbies[gameCode] = [];
+        console.log(`Lobby ${gameCode} does not exist!`);
+        socket.emit("lobby-error", "Game lobby does not exist.");
+        return;
     }
-    
+
+    // Check if the lobby is full
     if (gameLobbies[gameCode].length >= 3) {
-      // Send an error message to the client (lobby is full)
-      socket.emit("lobby-full", "This lobby is full. Please try another game.");
-      return;
+        console.log(`Lobby ${gameCode} is full.`);
+        socket.emit("lobby-full", "This lobby is full. Please try another game.");
+        return;
     }
 
     // Ensure the user is not already in the lobby
     if (!gameLobbies[gameCode].includes(username)) {
-      gameLobbies[gameCode].push(username);
-      socket.join(gameCode);
+        gameLobbies[gameCode].push(username);
+        socket.join(gameCode);
+        console.log(`${username} successfully joined lobby ${gameCode}`);
 
-      console.log(`${username} joined lobby ${gameCode}`);
-      
-      // Notify all players in the lobby about the updated player list
-      io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
+        // Notify all players in the lobby
+        io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
+    } else {
+        console.log(`${username} is already in lobby ${gameCode}`);
     }
-  });
+});
 
   /**
    * Handles when a player leaves a game lobby.
