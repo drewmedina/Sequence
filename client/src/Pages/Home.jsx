@@ -3,11 +3,19 @@ import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
 import { Avatar } from "antd";
 import { UserOutlined } from '@ant-design/icons';
+import { useNavigate } from "react-router-dom";
 function Home() {
   const { currentUser } = useAuth(); 
   const [gameCode, setGameCode] = useState(""); 
   const [lobbyUsers, setLobbyUsers] = useState([]);
+  const navigate = useNavigate();
 
+  const handleCreateGameClick = (e) =>{
+    console.log("press")
+    e.preventDefault();
+    navigate("/createGame")
+
+  }
   // useEffect(() => {
 
   //   socket.on("lobby-update", (users) => {
@@ -39,7 +47,7 @@ function Home() {
             <h2>{currentUser.username}</h2>
           </div> 
           <div style={{"height":"23%", "justifyContent":"space-between", "width":"100%", "display":"flex", "flexDirection":"column", "alignItems":"center", "marginBottom":"6%"}}>
-            <button style={{"width":"80%", "backgroundColor":"#50c878"}}>Create a private game</button>
+            <button style={{"width":"80%", "backgroundColor":"#50c878"}} onClick={handleCreateGameClick}>Create a private game</button>
             <button style={{"width":"80%"}}>Join a game</button>
           </div>
           
