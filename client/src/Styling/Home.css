@@ -1,0 +1,41 @@
+.home-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .error-message {
+    color: red;
+  }
+  
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .game-code-input {
+    padding: 10px;
+    width: 250px;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .join-button {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .create-button {
+    background-color: #28a745;
+    color: white;
+  }
+  

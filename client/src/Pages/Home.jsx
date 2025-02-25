@@ -4,36 +4,60 @@ import { useAuth } from "../Auth/AuthContext";
 import { Avatar } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+
 function Home() {
   const { currentUser } = useAuth(); 
   const [gameCode, setGameCode] = useState(""); 
   const [lobbyUsers, setLobbyUsers] = useState([]);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleCreateGameClick = (e) =>{
     console.log("press")
     e.preventDefault();
     navigate("/createGame")
-
   }
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   socket.on("lobby-update", (users) => {
-  //     setLobbyUsers(users);
-  //   });
+    // Listen for updates to the lobby
+    socket.on("lobby-update", (users) => {
+      setLobbyUsers(users);
+    });
 
-  //   return () => {
-  //     socket.off("lobby-update");
-  //   };
-  // }, []);
+    // Listen for errors (full lobby or invalid lobby)
+    socket.on("lobby-full", (message) => {
+      setError(message);
+    });
+    socket.on("lobby-error", (message) => {
+      setError(message);
+    });
 
-  // const joinLobby = () => {
-  //   console.log('HI')
-  //   if (gameCode.trim() === "") return; 
-  //   if (lobbyUsers.includes(currentUser.email)) return;
+    // Listen for created game codes
+    socket.on("game-created", (newGameCode) => {
+      setGameCode(newGameCode);
+      setError("");
+    });
+
+    return () => {
+      socket.off("lobby-update");
+      socket.off("lobby-full");
+      socket.off("lobby-error");
+      socket.off("game-created");
+    };
+  }, []);
+
+  const joinLobby = () => {
+    console.log('HI')
+    if (gameCode.trim() === "") return; 
+    if (lobbyUsers.includes(currentUser.email)) return;
   
-  //   socket.emit("join-lobby", gameCode, currentUser.email);
-  // };
+    socket.emit("join-lobby", gameCode, currentUser.email);
+  };
+
+  const createGame = () => {
+    setError(""); 
+    socket.emit("create-game", currentUser.email);
+  };
 
   return (
     <div style={{"backgroundImage":"url(/Assets/PaperBackground.jpg", "height":"100%", "backgroundRepeat": "no-repeat",
@@ -50,20 +74,7 @@ function Home() {
             <button style={{"width":"80%", "backgroundColor":"#50c878"}} onClick={handleCreateGameClick}>Create a private game</button>
             <button style={{"width":"80%"}}>Join a game</button>
           </div>
-          
         </div>
-        {/* <input
-          type="text"
-          placeholder="Enter game code"
-          value={gameCode}
-          onChange={(e) => setGameCode(e.target.value)}
-        />
-        <h3>Players in Lobby:</h3>
-        <ul>
-          {lobbyUsers.map((user, index) => (
-            <li key={index}>{user}</li>
-          ))}
-        </ul> */}
       </div>
     </div>
   );
