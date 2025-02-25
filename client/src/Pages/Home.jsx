@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
+import "../Styling/Home.css";
 
 function Home() {
   const { currentUser } = useAuth(); 
   const [gameCode, setGameCode] = useState(""); 
   const [lobbyUsers, setLobbyUsers] = useState([]);
-  const [error, setError] = useState(""); // Store error messages
+  const [error, setError] = useState("");
 
   useEffect(() => {
 
+    // Listen for updates to the lobby
     socket.on("lobby-update", (users) => {
       setLobbyUsers(users);
     });
@@ -24,8 +26,8 @@ function Home() {
 
     // Listen for created game codes
     socket.on("game-created", (newGameCode) => {
-      setGameCode(newGameCode); // Set the game code automatically
-      setError(""); // Clear any error messages
+      setGameCode(newGameCode);
+      setError("");
     });
 
     return () => {
@@ -49,61 +51,29 @@ function Home() {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "20px" }}>
+    <div className="home-container">
       <h2>Welcome, {currentUser?.email}!</h2>
 
-      {/* Show error message if any */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      {/* Input and Button Wrapping Div */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-        {/* Game Code Input */}
+      <div className="input-container">
         <input
           type="text"
           placeholder="Enter game code"
           value={gameCode}
           onChange={(e) => setGameCode(e.target.value)}
-          style={{
-            padding: "10px",
-            width: "250px",
-            fontSize: "16px",
-            textAlign: "center"
-          }}
+          className="game-code-input"
         />
-        {/* Join Lobby Button */}
-        <button 
-          onClick={joinLobby}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            cursor: "pointer",
-            backgroundColor: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "5px"
-          }}
-        >
+
+        <button onClick={joinLobby} className="button join-button">
           Join Lobby
         </button>
-        
-        {/* Create Game Button */}
-        <button 
-          onClick={createGame}
-          style={{
-            padding: "10px 20px",
-            fontSize: "16px",
-            cursor: "pointer",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "5px"
-          }}
-        >
+
+        <button onClick={createGame} className="button create-button">
           Create New Game
         </button>
       </div>
 
-      {/* List of Players */}
       <h3>Players in Lobby:</h3>
       <ul>
         {lobbyUsers.map((user, index) => (
