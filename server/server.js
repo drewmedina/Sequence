@@ -57,10 +57,10 @@ io.on("connection", (socket) => {
     const gameCode = generateGameCode();
 
     // Create the lobby and add the first player
-    gameLobbies[gameCode] = [];
-
+    gameLobbies[gameCode] = [username];
+    socket.join(gameCode);
     console.log(`Game created with code ${gameCode} by ${username}`);
-
+    io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
     socket.emit("game-created", gameCode);
   });
 
