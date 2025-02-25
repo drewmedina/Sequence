@@ -9,6 +9,7 @@ import Login from './Pages/Login';
 import Signup from './Pages/Signup';
 import {useAuth} from "./Auth/AuthContext"
 import Header from './Components/Header';
+import CreateGamePage from './Pages/CreateGamePage';
 function App() {
     const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -31,14 +32,19 @@ function App() {
       path: "/signup",
       element: <Signup/>,
     },
+    {
+      path: "/createGame",
+      element: <CreateGamePage/>
+    }
   ]);
   return (
     <AuthProvider>
       <div style={{"overflow":"hidden", "height":"100vh", "width":"100vw"}}>
         <Header/>
-        <RouterProvider router={router} />
+        <div style={{"height":"94%"}}>
+          <RouterProvider router={router} />
+        </div>
       </div>
-      
     </AuthProvider>
   );
 
