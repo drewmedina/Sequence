@@ -18,7 +18,7 @@ function Header() {
         padding:"2px"
       }}>
         <img src="../../Assets/logo.gif" style={{"height":"60%", "padding":"4px"}}></img>
-        {currentUser ? <div style={{"padding":"10px", "display":"flex", "alignItems":"center", "spacing":"5px", "width":"9%", "justifyContent":"space-between"}}><p>{currentUser.username}</p><Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#87d068' }}/></div> : <div></div>}
+        {currentUser ? <div style={{"padding":"10px", "display":"flex", "alignItems":"center", "spacing":"5px", "width":"9%", "justifyContent":"space-between"}}><p className='username'>{currentUser.username}</p><Avatar size="small" icon={<UserOutlined />} style={{ backgroundColor: '#87d068' }}/></div> : <div></div>}
     </header>
   )
 }

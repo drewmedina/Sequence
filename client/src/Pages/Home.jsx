@@ -4,6 +4,7 @@ import { useAuth } from "../Auth/AuthContext";
 import { Avatar } from "antd";
 import { UserOutlined } from '@ant-design/icons';
 import { useNavigate } from "react-router-dom";
+import "../Styling/Home.css";
 
 function Home() {
   const { currentUser } = useAuth(); 
@@ -60,19 +61,19 @@ function Home() {
   };
 
   return (
-    <div style={{"backgroundImage":"url(/Assets/PaperBackground.jpg", "height":"100%", "backgroundRepeat": "no-repeat",
-      "backgroundSize": "cover", 
-      "display": "flex",  boxShadow: 3,}}>
-      <div style={{"display":"flex", "flexDirection":"column", "width":"100%", "alignItems":"center", "marginTop":"6%", "justifyContent":"space-evenly", "marginTop":"2%"}}>
-        <img src="/Assets/logo.gif" style={{"width":"33%", "height":"10%"}}></img>
-        <div style={{"display":"flex", "flexDirection":"column", "justifyContent":"space-between", "alignItems":"center", "width":"35%", "height":"50%", "backgroundColor":"#4e3b31", "opacity":"93%", "borderRadius":"6px", boxShadow: "2px 4px 6px rgba(1, 1, 1, 1)",}}>
-          <div style={{"height":"60%", "width":"100%", "alignItems":"center", "display":"flex", "flexDirection":"column", "marginTop":"3%"}}>
-            <Avatar icon={<UserOutlined />} style={{"height":"65%", "width":"30%"}}></Avatar>
-            <h2>{currentUser.username}</h2>
-          </div> 
-          <div style={{"height":"23%", "justifyContent":"space-between", "width":"100%", "display":"flex", "flexDirection":"column", "alignItems":"center", "marginBottom":"6%"}}>
-            <button style={{"width":"80%", "backgroundColor":"#50c878"}} onClick={handleCreateGameClick}>Create a private game</button>
-            <button style={{"width":"80%"}}>Join a game</button>
+    <div className="home-container">
+      <div className="home-content">
+        <img src="/Assets/logo.gif" alt="Logo" className="logo" />
+        <div className="lobby-container">
+          <div className="avatar-container">
+            <Avatar icon={<UserOutlined />} className="avatar" />
+            <h2 className="username">{currentUser.username}</h2>
+          </div>
+          <div className="buttons-container">
+            <button className="button create-button" onClick={handleCreateGameClick}>
+              Create a private game
+            </button>
+            <button className="button">Join a game</button>
           </div>
         </div>
       </div>
