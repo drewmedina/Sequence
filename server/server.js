@@ -26,7 +26,9 @@ const io = new Server(server, {
  * Stores active game lobbies and their players.
  * @type {Object.<string, string[]>} - A dictionary where keys are game codes, and values are arrays of usernames.
  */
-const gameLobbies = {};
+const gameLobbies = {
+  "ABC123": [],
+};
 
 /**
  * Generates a unique 6-character game code.

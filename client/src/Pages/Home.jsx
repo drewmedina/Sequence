@@ -64,6 +64,7 @@ function Home() {
     if (e.key === "Enter") {
       if (gameCode.trim() === "" || lobbyUsers.includes(currentUser.email)) return;
       socket.emit("join-lobby", gameCode, currentUser.email);
+      navigate(`/lobby/${gameCode}`);
     }
   };
 
