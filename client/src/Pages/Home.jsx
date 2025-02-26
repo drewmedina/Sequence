@@ -11,7 +11,9 @@ function Home() {
   const [gameCode, setGameCode] = useState(""); 
   const [lobbyUsers, setLobbyUsers] = useState([]);
   const [error, setError] = useState("");
+  const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
+
 
   const handleCreateGameClick = (e) =>{
     console.log("press")
@@ -47,17 +49,22 @@ function Home() {
     };
   }, []);
 
-  const joinLobby = () => {
-    console.log('HI')
-    if (gameCode.trim() === "") return; 
-    if (lobbyUsers.includes(currentUser.email)) return;
-  
-    socket.emit("join-lobby", gameCode, currentUser.email);
-  };
-
   const createGame = () => {
     setError(""); 
     socket.emit("create-game", currentUser.email);
+  };
+
+  // Called when "Join a Game" is clicked
+  const handleJoinClick = () => {
+    setIsJoining(true); // Show the input field instead of button
+  };
+
+  // Called when user presses Enter after entering a game code
+  const handleJoinLobby = (e) => {
+    if (e.key === "Enter") {
+      if (gameCode.trim() === "" || lobbyUsers.includes(currentUser.email)) return;
+      socket.emit("join-lobby", gameCode, currentUser.email);
+    }
   };
 
   return (
@@ -70,10 +77,27 @@ function Home() {
             <h2 className="username">{currentUser.username}</h2>
           </div>
           <div className="buttons-container">
+            
             <button className="button create-button" onClick={handleCreateGameClick}>
               Create a private game
             </button>
-            <button className="button">Join a game</button>
+
+            {!isJoining ? (
+              <button className="button join-button" onClick={handleJoinClick}>
+              Join a game
+              </button>
+            ) : (
+               <input
+               type="text"
+               className="join-input"
+               placeholder="Enter game code"
+               value={gameCode}
+               onChange={(e) => setGameCode(e.target.value)}
+               onKeyDown={handleJoinLobby}
+               autoFocus
+             />
+            )}
+
           </div>
         </div>
       </div>
