@@ -9,6 +9,16 @@ suits.forEach(suit => {
   });
 });
 
+//need way of manually adding jokes
+// deck.push({ jokers, BJoker1 });
+// deck.push({ jokers, BJoker2 });
+// deck.push({ "jokers", "WJoker1" });
+// deck.push({ jokers, WJoker2 });
+
+deck.push({ rank: "BJoker1", suit: "jokers" });
+deck.push({ rank: "BJoker2", suit: "jokers" });
+
+
 function getRandom(max) {
     return Math.floor(Math.random() * max);
   }

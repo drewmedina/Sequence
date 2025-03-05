@@ -2,7 +2,9 @@ import { useState } from "react";
 import styled from "styled-components";
 import { getCard } from "../Components/GamePieces/Deck";
 import Card from "../Components/GamePieces/Card"
+import Hand from "../Components/GamePieces/Hand"; 
 
+//a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
   background-color: pink;
   height: 100vh;
@@ -11,50 +13,48 @@ const AppContainer = styled.div`
   align-items: center;
 `;
 
-const StyledText = styled.p`
-  font-size: 2rem;
-  color: white;
+const CardContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0px;
 `;
 
+const HoverCard = styled.div`
+  transition: transform 0.3s;
+  &:hover {
+    transform: translateY(-10px); /* Makes the card lift slightly on hover */
+  }
+`;
+
+//gap: 1rem; /* Adjust space between cards */
 function Play() {
   
-    
-//     const [card, setCard] = useState(getCard());
+  const hand = Hand();
+  const [cards, setCards] = useState(hand.getCards());
 
-//   const setRandomCard = () => {
-//     const newCard = getCard();
-//     setCard(newCard);
-//   };
+  //gets a new random card
+  const setRandomCard = () => {
+    //const newCard = getCard();
+    setCards(hand.getCards());
+    //setCard(newCard);
+  };
 
-//   return (
-//     <div>
-//       <button type="button" onClick={setRandomCard}>
-//         New Card{" "}
-//       </button>
-//       <Card rank={card.rank} suit={card.suit} />
-//     </div>
-//   );
-//-------------
-// const [card, setCard] = useState(getCard());
 
-//   const setRandomCard = () => {
-//     const newCard = getCard();
-//     setCard(newCard);
-//   };
-
-//   return (
-//     <AppContainer>
-//       <div>
-//         <button type="button" onClick={setRandomCard}>
-//           New Card{" "}
-//         </button>
-//         <Card rank={card.rank} suit={card.suit} />
-//       </div>
-//     </AppContainer>
-//   );
 return (
   <AppContainer>
-    <StyledText>Hello, World!</StyledText>
+         <div>
+       <button type="button" onClick={setRandomCard}>
+         New Cards
+       </button>
+       {/* <Card rank={card.rank} suit={card.suit} /> */}
+       <CardContainer>
+          {cards.map((card, index) => (
+            <HoverCard>
+            <Card key={index} rank={card.rank} suit={card.suit} />
+            </HoverCard>
+          ))}
+        </CardContainer>
+     </div>
   </AppContainer>
 );
  }
