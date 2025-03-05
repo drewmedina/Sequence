@@ -74,7 +74,7 @@ io.on("connection", (socket) => {
    * @param {string} username - The username (or email) of the player joining.
    */
   socket.on("join-lobby", (gameCode, username) => {
-    console.log(`User ${username} is trying to join game ${gameCode}`); // Debugging log
+    console.log(`User ${username} is trying to join game ${gameCode}`);
 
     // Check if the game lobby exists
     if (!gameLobbies[gameCode]) {
