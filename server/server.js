@@ -17,9 +17,9 @@ app.use(cors());
  */
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", 
-    methods: ["GET", "POST"]
-  }
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  },
 });
 
 /**
@@ -27,7 +27,7 @@ const io = new Server(server, {
  * @type {Object.<string, string[]>} - A dictionary where keys are game codes, and values are arrays of usernames.
  */
 const gameLobbies = {
-  "ABC123": [],
+  ABC123: [],
 };
 
 /**
@@ -51,13 +51,19 @@ io.on("connection", (socket) => {
 
   /**
    * Generates a unique game code and creates a new game lobby.
-   * 
+   *
    * @event create-game
    * @param {string} username - The player who is creating the game.
    */
   socket.on("create-game", (username) => {
     const gameCode = generateGameCode();
-
+    if (!username) {
+      console.error(
+        `Error: create-game event received with undefined username. ${socket.id}`
+      );
+      socket.emit("lobby-error", "Invalid username.");
+      return;
+    }
     // Create the lobby and add the first player
     gameLobbies[gameCode] = [username];
     socket.join(gameCode);
@@ -68,61 +74,68 @@ io.on("connection", (socket) => {
 
   /**
    * Handles when a player joins a game lobby.
-   * 
+   *
    * @event join-lobby
    * @param {string} gameCode - The unique game lobby code.
    * @param {string} username - The username (or email) of the player joining.
    */
   socket.on("join-lobby", (gameCode, username) => {
     console.log(`User ${username} is trying to join game ${gameCode}`); // Debugging log
-
     // Check if the game lobby exists
     if (!gameLobbies[gameCode]) {
-        console.log(`Lobby ${gameCode} does not exist!`);
-        socket.emit("lobby-error", "Game lobby does not exist.");
-        return;
+      console.log(`Lobby ${gameCode} does not exist!`);
+      socket.emit("lobby-error", "Game lobby does not exist.");
+      return;
     }
 
     // Check if the lobby is full
     if (gameLobbies[gameCode].length >= 3) {
-        console.log(`Lobby ${gameCode} is full.`);
-        socket.emit("lobby-full", "This lobby is full. Please try another game.");
-        return;
+      console.log(`Lobby ${gameCode} is full.`);
+      socket.emit("lobby-full", "This lobby is full. Please try another game.");
+      return;
     }
 
     // Ensure the user is not already in the lobby
     if (!gameLobbies[gameCode].includes(username)) {
-        gameLobbies[gameCode].push(username);
-        socket.join(gameCode);
-        console.log(`${username} successfully joined lobby ${gameCode}`);
-
-        // Notify all players in the lobby
-        io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
+      gameLobbies[gameCode].push(username);
+      socket.join(gameCode);
+      console.log(`${username} successfully joined lobby ${gameCode}`);
+      console.log(
+        `🔵 Emitting lobby-update with users:`,
+        gameLobbies[gameCode]
+      );
+      io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
     } else {
-        console.log(`${username} is already in lobby ${gameCode}`);
+      console.log(`${username} is already in lobby ${gameCode}`);
     }
-});
+  });
 
   /**
    * Handles when a player leaves a game lobby.
-   * 
+   *
    * @event leave-lobby
    * @param {string} gameCode - The game lobby code the player is leaving.
    * @param {string} username - The username of the player leaving.
    */
   socket.on("leave-lobby", (gameCode, username) => {
-    
     // If the game lobby exists, remove the player from the list
     if (gameLobbies[gameCode]) {
-      gameLobbies[gameCode] = gameLobbies[gameCode].filter(user => user !== username);
+      gameLobbies[gameCode] = gameLobbies[gameCode].filter(
+        (user) => user !== username
+      );
       io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
     }
     socket.leave(gameCode);
   });
+  socket.on("get-players", (gameCode) => {
+    if (gameLobbies[gameCode]) {
+      io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
+    }
+  });
 
   /**
    * Handles when a player disconnects from the server.
-   * 
+   *
    * @event disconnect
    */
   socket.on("disconnect", () => {
