@@ -10,6 +10,7 @@ import Signup from './Pages/Signup';
 import {useAuth} from "./Auth/AuthContext"
 import Header from './Components/Header';
 import Play from './Pages/Play'
+import Test from './Pages/Test';
 function App() {
     const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -35,6 +36,10 @@ function App() {
     {
       path: "/play",
       element: <Play/>,
+    },
+    {
+      path: "/test",
+      element: <Test/>,
     },
   ]);
   return (
