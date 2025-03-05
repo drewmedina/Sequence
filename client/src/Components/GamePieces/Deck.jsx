@@ -28,5 +28,18 @@ function getCard() {
     return deck[randomIndex];
   }
 
-  export { getCard };
+  function removeCardFromDeck(card) {
+    const index = deck.findIndex(c => c.rank === card.rank && c.suit === card.suit);
+    if (index !== -1) {
+      deck.splice(index, 1); // Removes the card from the deck
+    }
+  }
+
+  function drawCard() {
+    const card = getCard(); // Get a random card from the deck
+    removeCardFromDeck(card); // Remove it from the deck
+    return card; // Return the card to be added to hand
+  }
+
+  export { getCard, removeCardFromDeck, drawCard};
 
