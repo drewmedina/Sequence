@@ -11,7 +11,7 @@ import Lobby from './Pages/Lobby';
 import {useAuth} from "./Auth/AuthContext"
 import Header from './Components/Header';
 import CreateGamePage from './Pages/CreateGamePage';
-
+import GameScreen from './Pages/GameScreen';
 function App() {
     const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -35,13 +35,17 @@ function App() {
       element: <Signup/>,
     },
     {
-      path: "/createGame",
+      path: "/createGame/:gameCode",
       element: <CreateGamePage/>
     },
     {
       path: "/lobby/:gameCode",
       element: <Lobby />,
     },
+    {
+      path: "/game/:gameCode",
+      element: <GameScreen />
+    }
   ]);
   return (
     <AuthProvider>

@@ -18,40 +18,51 @@ function Home() {
   const handleCreateGameClick = (e) =>{
     console.log("press")
     e.preventDefault();
-    navigate("/createGame")
+    createGame();
   }
   useEffect(() => {
-
-    // Listen for updates to the lobby
+    console.log("Setting up socket listeners...");
+    
     socket.on("lobby-update", (users) => {
+      console.log("Lobby updated:", users);
       setLobbyUsers(users);
     });
-
-    // Listen for errors (full lobby or invalid lobby)
+  
     socket.on("lobby-full", (message) => {
+      console.log("Lobby full:", message);
       setError(message);
     });
+  
     socket.on("lobby-error", (message) => {
+      console.log("Lobby error:", message);
       setError(message);
     });
-
-    // Listen for created game codes
+  
     socket.on("game-created", (newGameCode) => {
+      console.log(`Game created: ${newGameCode}`);
       setGameCode(newGameCode);
+      navigate(`/createGame/${newGameCode}`);
       setError("");
     });
-
+  
     return () => {
+      console.log("Cleaning up socket listeners...");
       socket.off("lobby-update");
       socket.off("lobby-full");
       socket.off("lobby-error");
       socket.off("game-created");
     };
   }, []);
+  
 
   const createGame = () => {
-    setError(""); 
-    socket.emit("create-game", currentUser.email);
+    if (!currentUser || !currentUser.email) {
+      setError("Error: User not logged in.");
+      console.error("Error: currentUser is undefined or has no email.");
+      return;
+    }
+    console.log(`Creating game for user: ${currentUser.username}`);
+    socket.emit("create-game", currentUser);
   };
 
   // Called when "Join a Game" is clicked
@@ -62,9 +73,14 @@ function Home() {
   // Called when user presses Enter after entering a game code
   const handleJoinLobby = (e) => {
     if (e.key === "Enter") {
-      if (gameCode.trim() === "" || lobbyUsers.includes(currentUser.email)) return;
-      socket.emit("join-lobby", gameCode, currentUser.email);
-      navigate(`/lobby/${gameCode}`);
+      if (!currentUser || !currentUser.email) {
+        setError("Error: User not logged in.");
+        console.error("Error: currentUser is undefined or has no email.");
+        return;
+      }
+      if (gameCode.trim() === "" || lobbyUsers.includes(currentUser.username)) return;
+      socket.emit("join-lobby", gameCode, currentUser);
+      navigate(`/createGame/${gameCode}`);
     }
   };
 
@@ -84,7 +100,7 @@ function Home() {
             </button>
 
             {!isJoining ? (
-              <button className="button join-button" onClick={handleJoinClick}>
+              <button variant="outlined" className="button join-button" onClick={handleJoinClick}>
               Join a game
               </button>
             ) : (
