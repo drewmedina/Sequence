@@ -1,23 +1,152 @@
 import React, { useEffect, useState } from "react";
 import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
-import { Avatar } from "antd";
-import { UserOutlined } from '@ant-design/icons';
+import { useNavigate, useParams } from "react-router-dom";
 import UserWaitingComponent from "../Components/UserWaitingComponent";
+import "../Styling/CreateGamePage.css";
+import { Slider, Row, Col, InputNumber, Button } from "antd";
+import { NumberOutlined, FieldTimeOutlined } from "@ant-design/icons";
 function CreateGamePage() {
-  const { currentUser } = useAuth(); 
+  const { currentUser } = useAuth();
+  const { gameCode } = useParams();
+  const [lobbyUsers, setLobbyUsers] = useState([]);
+  const [sequencesNeeded, setSequencesNeeded] = useState(1);
+  const [timePerMove, setTimePerMove] = useState(30);
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log("Listening for lobby updates for game:", gameCode);
+    socket.emit("get-players", gameCode);
+    socket.on("lobby-update", (users) => {
+      console.log("Received lobby update:", users);
+      setLobbyUsers(users);
+    });
+    return () => {
+      socket.off("lobby-update");
+    };
+  }, []);
 
+  const handleSequenceChange = (e) => {
+    setSequencesNeeded(Number(e));
+  };
+
+  const handleTimeChange = (e) => {
+    setTimePerMove(Number(e));
+  };
+
+  const handleStartGame = (e) => {
+    navigate(`/game/${gameCode}`);
+  };
+
+  const handleLeaveGame = (e) => {
+    socket.emit("leave-lobby", gameCode, currentUser);
+    navigate("/");
+  };
   return (
-    <div style={{"backgroundImage":"url(/Assets/PaperBackground.jpg", "height":"100%", "backgroundRepeat": "no-repeat",
-        "backgroundSize": "cover", 
-        "display": "flex",  boxShadow: 3,}}>
-            <div style={{"display":"flex", "flexDirection":"column", "width":"100%", "alignItems":"center", "marginTop":"6%", "justifyContent":"space-evenly", "marginTop":"2%"}}>
-            <div style={{"display":"flex", "flexDirection":"column", "justifyContent":"space-between", "alignItems":"center", "width":"80%", "height":"80%", "backgroundColor":"#4e3b31", "opacity":"93%", "borderRadius":"6px", boxShadow: "2px 4px 6px rgba(1, 1, 1, 1)",}}>
-                <UserWaitingComponent user={currentUser}/>
-            </div>
-            </div>
+    <div className="create-game-container">
+      <div
+        className="title"
+        style={{
+          width: "80%",
+          height: "10%",
+          backgroundColor: "#FFFFFF",
+          borderRadius: "6px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {lobbyUsers.length === 3 ? (
+          <h2 style={{ color: "#000000" }}>
+            Waiting For Leader to Start the Game
+          </h2>
+        ) : (
+          <h2 style={{ color: "#000000" }}>
+            Waiting for Players to join the lobby
+          </h2>
+        )}
       </div>
-  )
+      <div className="game-lobby">
+        <div className="current-players-box">
+          {lobbyUsers.length > 0 ? (
+            lobbyUsers.map((user, index) => (
+              <UserWaitingComponent user={user} key={index} />
+            ))
+          ) : (
+            <p>No players in lobby</p>
+          )}
+        </div>
+        <div className="lobby-box">
+          <div className="settings-box">
+            <div className="settings-top-section">
+              <div className="settings-header">
+                <h2>Game Settings</h2>
+              </div>
+              <div className="sequences">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "31%",
+                  }}
+                >
+                  <NumberOutlined />
+                  <label>Number of Sequences:</label>
+                </div>
+                <InputNumber
+                  min={1}
+                  max={2}
+                  style={{ margin: "0 16px" }}
+                  value={sequencesNeeded}
+                  onChange={handleSequenceChange}
+                />
+              </div>
+              <div className="time-per-move">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    width: "22%",
+                  }}
+                >
+                  <FieldTimeOutlined />
+                  <label>Time per move:</label>
+                </div>
+                <div className="slider">
+                  <Slider
+                    min={30}
+                    max={120}
+                    onChange={handleTimeChange}
+                    value={typeof timePerMove === "number" ? timePerMove : 0}
+                  />
+                </div>
+                <div>
+                  <InputNumber
+                    min={30}
+                    max={120}
+                    style={{ margin: "0 16px" }}
+                    value={timePerMove}
+                    onChange={handleTimeChange}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="buttons">
+              <Button
+                disabled={lobbyUsers.length < 3}
+                onClick={handleStartGame}
+                color="green"
+                variant="solid"
+              >
+                Start Game!
+              </Button>
+              <Button onClick={handleLeaveGame}>Leave the Game😡</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default CreateGamePage
+export default CreateGamePage;
