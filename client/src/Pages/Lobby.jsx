@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import socket from "../Firebase/socket";
+import { useAuth } from "../Auth/AuthContext";
 import "../Styling/Lobby.css";
 import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 function Lobby() {
   const { gameCode } = useParams(); // Get game code from URL
+  const { currentUser } = useAuth();
   const [lobbyUsers, setLobbyUsers] = useState([]);
 
   useEffect(() => {
     // Join the lobby when component mounts
-    socket.emit("join-lobby", gameCode);
+    socket.emit("join-lobby", gameCode, currentUser.email);
 
     // Listen for updates to the player list
     socket.on("lobby-update", (users) => {
