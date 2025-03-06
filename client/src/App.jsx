@@ -7,7 +7,6 @@ import {AuthProvider} from './Auth/AuthContext';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
-import Lobby from './Pages/Lobby';
 import {useAuth} from "./Auth/AuthContext";
 import Header from './Components/Header';
 import Play from './Pages/Play';
@@ -46,14 +45,16 @@ function App() {
       path: "/test",
       element: <Test/>,
     },
+    {
       path: "/createGame/:gameCode",
-      element: <CreateGamePage/>
+      element: <CreateGamePage/>,
     },
     {
       path: "/game/:gameCode",
-      element: <GameScreen />
+      element: <GameScreen />,
     }
   ]);
+
   return (
     <AuthProvider>
       <div style={{"overflow":"hidden", "height":"100vh", "width":"100vw"}}>
