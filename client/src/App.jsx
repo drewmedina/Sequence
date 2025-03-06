@@ -37,10 +37,16 @@ function App() {
     {
       path: "/createGame/:gameCode",
       element: <CreateGamePage />,
+    {
+      path: "/play",
+      element: <Play/>,
     },
     {
-      path: "/lobby/:gameCode",
-      element: <Lobby />,
+      path: "/test",
+      element: <Test/>,
+    },
+      path: "/createGame/:gameCode",
+      element: <CreateGamePage/>
     },
     {
       path: "/game/:gameCode",
