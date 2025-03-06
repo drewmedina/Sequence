@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function GameScreen() {
-  return (
-    <div>GameScreen</div>
-  )
+  return <div>GameScreen</div>;
 }
 
-export default GameScreen
+export default GameScreen;
