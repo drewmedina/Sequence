@@ -2,15 +2,20 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
-} from 'react-router-dom'
+} from 'react-router-dom';
 import {AuthProvider} from './Auth/AuthContext';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
-import {useAuth} from "./Auth/AuthContext"
+import Lobby from './Pages/Lobby';
+import {useAuth} from "./Auth/AuthContext";
 import Header from './Components/Header';
-import Play from './Pages/Play'
+import Play from './Pages/Play';
 import Test from './Pages/Test';
+
+import CreateGamePage from './Pages/CreateGamePage';
+import GameScreen from './Pages/GameScreen';
+
 function App() {
     const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -41,14 +46,22 @@ function App() {
       path: "/test",
       element: <Test/>,
     },
+      path: "/createGame/:gameCode",
+      element: <CreateGamePage/>
+    },
+    {
+      path: "/game/:gameCode",
+      element: <GameScreen />
+    }
   ]);
   return (
     <AuthProvider>
       <div style={{"overflow":"hidden", "height":"100vh", "width":"100vw"}}>
         <Header/>
-        <RouterProvider router={router} />
+        <div style={{"height":"94%"}}>
+          <RouterProvider router={router} />
+        </div>
       </div>
-      
     </AuthProvider>
   );
 
