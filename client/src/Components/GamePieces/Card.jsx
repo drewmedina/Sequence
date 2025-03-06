@@ -3,17 +3,22 @@ import styled from "styled-components";
 
  const CardBox = styled.div`
      font-size: 8rem;
-     line-height: 1;
-     padding: 0;
-     margin: 0; 
-     display: flex;
-     justify-content:center;
-     align-items:center;
+     line-height: .42;
+     padding: 20px;
+     margin: 0;
      color: ${({ suit }) => (suit === "hearts" || suit === "diamonds" ? "red" : "black")};
-     //background-color: rgba(255, 255, 255, 0.6);
-     //margin-left: -30px;
+     background-color: white;
+     width: 90px;
+     height: 120px;
+     border-radius: 10px;
+     display: flex;
+     justify-content: center;
+     box-sizing: border-box;
+     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+     padding-top: 20px;  
+    `;
 
- `;
+ 
 //add token 
 //gamebaord matrix .map function
 //get consistently 7 to show up
