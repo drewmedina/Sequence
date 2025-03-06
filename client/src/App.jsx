@@ -2,16 +2,20 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
-} from 'react-router-dom'
+} from 'react-router-dom';
 import {AuthProvider} from './Auth/AuthContext';
 import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Signup from './Pages/Signup';
 import Lobby from './Pages/Lobby';
-import {useAuth} from "./Auth/AuthContext"
+import {useAuth} from "./Auth/AuthContext";
 import Header from './Components/Header';
+import Play from './Pages/Play';
+import Test from './Pages/Test';
+
 import CreateGamePage from './Pages/CreateGamePage';
 import GameScreen from './Pages/GameScreen';
+
 function App() {
     const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -35,12 +39,15 @@ function App() {
       element: <Signup/>,
     },
     {
-      path: "/createGame/:gameCode",
-      element: <CreateGamePage/>
+      path: "/play",
+      element: <Play/>,
     },
     {
-      path: "/lobby/:gameCode",
-      element: <Lobby />,
+      path: "/test",
+      element: <Test/>,
+    },
+      path: "/createGame/:gameCode",
+      element: <CreateGamePage/>
     },
     {
       path: "/game/:gameCode",
