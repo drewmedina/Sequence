@@ -3,6 +3,7 @@ import {
   createBrowserRouter,
   RouterProvider,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import { AuthProvider } from "./Auth/AuthContext";
 import Home from "./Pages/Home";
@@ -12,7 +13,7 @@ import CreateGamePage from "./Pages/CreateGamePage";
 import GameScreen from "./Pages/GameScreen";
 import Play from "./Pages/Play";
 import Test from "./Pages/Test";
-import RootLayout from "./Components/RootLayout";
+import Header from "./Components/Header";
 import { useAuth } from "./Auth/AuthContext";
 
 function App() {
@@ -26,7 +27,10 @@ function App() {
       path: "/",
       element: (
         <ProtectedRoute>
-          <RootLayout />
+          <div style={{ overflow: "hidden", height: "100vh", width: "100vw" }}>
+            <Header />
+            <Outlet />
+          </div>
         </ProtectedRoute>
       ),
       children: [
