@@ -62,6 +62,11 @@ export function AuthProvider({ children }) {
       });
   }
 
+  function logout() {
+    return auth.signOut();
+  }
+
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -95,6 +100,7 @@ export function AuthProvider({ children }) {
     currentUser,
     signup,
     signin,
+    logout,
   };
   return (
     <AuthContext.Provider value={value}>
