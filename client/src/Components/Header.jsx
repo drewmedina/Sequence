@@ -1,10 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Space } from "antd";
+import { Avatar, Space, Dropdown, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Calls Firebase logout function
+      navigate("/login"); // Redirect to login screen
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+        Profile
+      </Menu.Item>
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
+
   console.log(currentUser);
   return (
     <header
@@ -34,13 +59,17 @@ function Header() {
             width: "9%",
             justifyContent: "space-between",
           }}
+          onMouseEnter={() => setDropdownVisible(true)}
+          onMouseLeave={() => setDropdownVisible(false)}
         >
           <p className="username">{currentUser.username}</p>
-          <Avatar
-            size="small"
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#87d068" }}
-          />
+          <Dropdown overlay={menu} visible={dropdownVisible} placement="bottomRight">
+            <Avatar
+              size="small"
+              icon={<UserOutlined />}
+              style={{ backgroundColor: "#87d068",  cursor: "pointer" }}
+            />
+          </Dropdown>
         </div>
       ) : (
         <div></div>
