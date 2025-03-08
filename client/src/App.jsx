@@ -7,7 +7,6 @@ import { AuthProvider } from "./Auth/AuthContext";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
-import Lobby from "./Pages/Lobby";
 import { useAuth } from "./Auth/AuthContext";
 import Header from "./Components/Header";
 import CreateGamePage from "./Pages/CreateGamePage";
@@ -37,6 +36,7 @@ function App() {
     {
       path: "/createGame/:gameCode",
       element: <CreateGamePage />,
+    },
     {
       path: "/play",
       element: <Play/>,
@@ -45,6 +45,7 @@ function App() {
       path: "/test",
       element: <Test/>,
     },
+    {
       path: "/createGame/:gameCode",
       element: <CreateGamePage/>
     },
