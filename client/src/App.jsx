@@ -15,7 +15,7 @@ import Play from "./Pages/Play";
 import Test from "./Pages/Test";
 import Header from "./Components/Header";
 import { useAuth } from "./Auth/AuthContext";
-
+import ProfilePage from "./Pages/ProfilePage";
 function App() {
   const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -39,6 +39,7 @@ function App() {
         { path: "play", element: <Play /> },
         { path: "test", element: <Test /> },
         { path: "game/:gameCode", element: <GameScreen /> },
+        {path: "profile", element: <ProfilePage />},
       ],
     },
     {
