@@ -1,10 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Space } from "antd";
+import { Avatar, Dropdown } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
+  const menuItems = [
+    {
+      key: "profile",
+      label: "Profile",
+      onClick: () => navigate("/profile"),
+    },
+    {
+      key: "logout",
+      label: "Logout",
+      onClick: handleLogout,
+    },
+  ];
+
+
   console.log(currentUser);
   return (
     <header
@@ -34,13 +61,21 @@ function Header() {
             width: "9%",
             justifyContent: "space-between",
           }}
+          onMouseEnter={() => setDropdownOpen(true)}
+          onMouseLeave={() => setDropdownOpen(false)}
         >
           <p className="username">{currentUser.username}</p>
-          <Avatar
-            size="small"
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#87d068" }}
-          />
+          <Dropdown
+            menu={{ items: menuItems }}
+            open={dropdownOpen}
+            placement="bottomRight"
+          >
+            <Avatar
+              size="small"
+              icon={<UserOutlined />}
+              style={{ backgroundColor: "#87d068", cursor: "pointer" }}
+            />
+          </Dropdown>
         </div>
       ) : (
         <div></div>
