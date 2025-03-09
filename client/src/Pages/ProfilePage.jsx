@@ -13,8 +13,12 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
 
   // Handle avatar change
+  const handleAvatarChange = async (info) => {
+  };
   
   // Handle email update
+  const handleEmailUpdate = async (values) => {
+  };
 
   // Handle password update
   const handlePasswordUpdate = async (values) => {
