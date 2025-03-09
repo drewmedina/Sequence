@@ -12,34 +12,9 @@ const ProfilePage = () => {
   const [avatarUrl, setAvatarUrl] = useState(currentUser?.avatar || null);
   const [loading, setLoading] = useState(false);
 
-  // Handle avatar change. In a full implementation, you would upload the file
-  // (e.g., to Firebase Storage) and update your user document with the new URL.
-  const handleAvatarChange = (info) => {
-    const file = info.file.originFileObj;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setAvatarUrl(reader.result);
-      message.success("Avatar updated!");
-      // TODO: Upload the file to your storage and update the user's profile
-    };
-    reader.readAsDataURL(file);
-  };
-
+  // Handle avatar change
+  
   // Handle email update
-  const handleEmailUpdate = async (values) => {
-    const { email } = values;
-    try {
-      setLoading(true);
-      await updateEmail(auth.currentUser, email);
-      message.success("Email updated successfully!");
-      // Optionally, update the email in your Firestore user document as well.
-    } catch (error) {
-      console.error("Failed to update email:", error);
-      message.error("Failed to update email");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Handle password update
   const handlePasswordUpdate = async (values) => {
@@ -70,7 +45,7 @@ const ProfilePage = () => {
         />
         <Upload
           showUploadList={false}
-          beforeUpload={() => false} // Prevent auto-upload
+          beforeUpload={() => false} 
           onChange={handleAvatarChange}
         >
           <Button icon={<UploadOutlined />} style={{ marginTop: 10 }}>
