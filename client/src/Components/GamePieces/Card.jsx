@@ -6,7 +6,7 @@ import styled from "styled-components";
      line-height: .42;
      padding: 20px;
      margin: 0;
-     color: ${({ suit }) => (suit === "hearts" || suit === "diamonds" ? "red" : "black")};
+     color: ${({ suit }) => (suit === "hearts" || suit === "diamonds" || suit === "redJokers" ? "red" : "black")};
      background-color: white;
      width: 90px;
      height: 120px;
@@ -40,10 +40,13 @@ const cardSymbols = {
   },
   spades: {
     Two: "🂢", Three: "🂣", Four: "🂤", Five: "🂥", Six: "🂦", Seven: "🂧", Eight: "🂨", Nine: "🂩", Ten: "🂪",
-    Queen: "🂭", King: "🂮", Ace: "🂡", BJoker1: "🃏︎", BJoker2: "🃏︎", WJoker1: "🃟", Wjoker2:"🃟"
+    Queen: "🂭", King: "🂮", Ace: "🂡"
   },
-  jokers: {
-    BJoker1: "🃟", BJoker2: "🃟", WJoker1: "🃟", Wjoker2:"🃟"
+  blackJokers: {
+    BJoker1: "🃟", BJoker2: "🃟", BJoker3: "🃟", BJoker4:"🃟"
+  },
+  redJokers: {
+    RJoker1: "🃟", RJoker2:"🃟", RJoker3: "🃟", RJoker4:"🃟"
   }
   };
 
