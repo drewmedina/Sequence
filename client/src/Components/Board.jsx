@@ -2,7 +2,7 @@ import React from 'react';
 import Card from './GamePieces/Card';
 function DefaultGameBoard (){
    const boardData = [
-    ["A♣", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "A♣"],
+    ["FX", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "FX"],
     ["A♣", "7♠", "6♠", "5♠", "4♠", "3♠", "2♠", "2♥", "3♥", "5♦"],
     ["K♣", "8♠", "10♣", "Q♣", "K♣", "A♣", "A♦", "K♦", "4♥", "4♦"],
     ["Q♣", "9♠", "9♣", "8♥", "9♥", "10♥", "Q♥", "Q♦", "5♥", "3♦"],
@@ -11,7 +11,7 @@ function DefaultGameBoard (){
     ["8♣", "K♠", "6♣", "5♣", "4♣", "3♣", "2♣", "8♦", "8♥", "K♠"],
     ["7♣", "A♠", "2♦", "3♦", "4♦", "5♦", "6♦", "7♦", "9♥", "Q♠"],
     ["6♣", "5♣", "4♣", "3♣", "2♣", "A♥", "K♥", "Q♥", "10♥", "10♠"],
-    ["A♣", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "A♣"],
+    ["FX", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "FX"],
   ]
   
   return(
@@ -25,7 +25,7 @@ function DefaultGameBoard (){
         {
     boardData.map((row) =>
     row.map((value) => {
-      if (value === "FREE") {
+      if (value === "F◯") {
         <div></div> // Keep "FREE" as text
       }
   
@@ -37,13 +37,14 @@ function DefaultGameBoard (){
         "♥": "hearts",
         "♦": "diamonds",
         "♠": "spades",
-        "♣": "clubs"
+        "♣": "clubs",
+        "X": "frees"
       };
       const suitFolder = suitMap[suitSymbol]; // Folder name (e.g., "Hearts")
   
       // Convert face card abbreviations to full names
       
-      const rankMap = { 2: "Two", 3: "Three" ,4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", "A": "Ace", "K": "King", "Q": "Queen",};
+      const rankMap = { 2: "Two", 3: "Three" ,4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", "A": "Ace", "K": "King", "Q": "Queen", "F": "Free"};
       const formattedRank = rankMap[rank] || rank; // Use full name for face cards, else keep number
   
       // return {
