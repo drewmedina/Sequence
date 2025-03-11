@@ -8,22 +8,34 @@ import { Slider, Row, Col, InputNumber, Button } from "antd";
 import { NumberOutlined, FieldTimeOutlined } from "@ant-design/icons";
 function CreateGamePage() {
   const { currentUser } = useAuth();
-  const { gameCode } = useParams();
+  const { gameCode: urlGameCode } = useParams();
   const [lobbyUsers, setLobbyUsers] = useState([]);
   const [sequencesNeeded, setSequencesNeeded] = useState(1);
   const [timePerMove, setTimePerMove] = useState(30);
+  const [gameCode, setGameCode] = useState(urlGameCode || "");
+
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("Listening for lobby updates for game:", gameCode);
+    if (!gameCode) {
+      socket.on("game-created", (generatedCode) => {
+        console.log("Game created with code:", generatedCode);
+        setGameCode(generatedCode);
+      });
+    }
+
     socket.emit("get-players", gameCode);
     socket.on("lobby-update", (users) => {
       console.log("Received lobby update:", users);
       setLobbyUsers(users);
     });
+    
+    
     return () => {
       socket.off("lobby-update");
+      socket.off("game-created");
     };
-  }, []);
+
+  }, [gameCode]);
 
   const handleSequenceChange = (e) => {
     setSequencesNeeded(Number(e));
@@ -43,6 +55,10 @@ function CreateGamePage() {
   };
   return (
     <div className="create-game-container">
+      <div className="game-code-box">
+        <h2>Game Code: <span style={{ color: "#f7fdad" }}>{gameCode || "Generating..."}</span></h2>
+      </div>
+
       <div
         className="title"
         style={{
