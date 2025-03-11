@@ -25,7 +25,7 @@ function DefaultGameBoard (){
         {
     boardData.map((row) =>
     row.map((value) => {
-      if (value === "F◯") {
+      if (value === "FX") {
         <div></div> // Keep "FREE" as text
       }
   
