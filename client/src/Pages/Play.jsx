@@ -3,20 +3,41 @@ import styled from "styled-components";
 import { getCard, removeCardFromDeck, drawCard } from "../Components/GamePieces/Deck";
 import Card from "../Components/GamePieces/Card"
 import Hand from "../Components/GamePieces/Hand"; 
+import BoardImage from "../Components/BoardImage"; 
+import DefaultGameBoard from "../Components/Board";
+
 
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
-  background-color: pink;
+  background-image: url(Assets/PaperBackground.jpg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
+
+
 
 const CardContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 0px;
+  margin-top: 100px;
+
+`;
+
+const BoardContainer = styled.div`
+  display: flex;
+  margin-top: 20px;
+  margin-bottom: 80px; 
+  justify-content: center;
+  align-items: center;
+  max-height: 200px;
+  max-width: 980px;
 `;
 
 const HoverCard = styled.div`
@@ -25,6 +46,16 @@ const HoverCard = styled.div`
     transform: translateY(-10px); /* Makes the card lift slightly on hover */
   }
 `;
+
+const ButtonContainer = styled.div`
+  height: 40px;
+  margin-bottom: -70px;
+
+`;
+
+
+
+
 
 //gap: 1rem; /* Adjust space between cards */
 function Play() {
@@ -53,15 +84,31 @@ function Play() {
   };
 
 return (
+  
   <AppContainer>
+    
+      
+      
+      <BoardContainer>
+      
+      <DefaultGameBoard />
+ 
+        {/* <BoardImage /> */}
+            
+
+      </BoardContainer>
+
          <div>
-       <button type="button" onClick={setRandomCard}>
-         New Cards
-       </button>
-       <button type="button" onClick={drawCardFromDeck}>
-          Draw Card
-        </button>
+         
+          
+       
        {/* <Card rank={card.rank} suit={card.suit} /> */}
+       <ButtonContainer>
+          <button type="button" onClick={setRandomCard}> New Cards </button>
+          <button type="button" onClick={drawCardFromDeck}> Draw Card </button>
+
+      </ButtonContainer>
+
        <CardContainer>
           {cards.map((card, index) => (
             <HoverCard key = {index}>
