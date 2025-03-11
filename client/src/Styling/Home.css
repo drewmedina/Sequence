@@ -59,10 +59,10 @@
   background-color: #50c878;
 }
 .username {
-  color: #F7FDAD; /* Gold / Yellow color */
+  color: #f7fdad; /* Gold / Yellow color */
   font-weight: bold;
 }
-.avatar{
-  height:65%;
+.avatar {
+  height: 65%;
   width: 30%;
 }
