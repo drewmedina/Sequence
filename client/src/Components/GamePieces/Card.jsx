@@ -49,7 +49,7 @@ const cardSymbols = {
     RJoker1: "🃟", RJoker2:"🃟", RJoker3: "🃟", RJoker4:"🃟"
   },
   frees: {
-    Free: "⠀" // can also do 🂠⠀
+    Free: "⠀" // we can also do 🂠⠀
   }
   };
 
