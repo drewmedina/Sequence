@@ -15,7 +15,13 @@ function DefaultGameBoard (){
   ]
   
   return(
-     <div style={{ display: "grid", gridTemplateColumns: "repeat(10, 1fr)", gap: "5px" }}>
+     <div style={{ 
+      display: "grid", 
+      gridTemplateColumns: "repeat(10, 1fr)", 
+      gap: "3px", 
+      transform: "scale(0.35) rotate(90deg)", 
+      transformOrigin: "center",
+    }}>
         {
     boardData.map((row) =>
     row.map((value) => {

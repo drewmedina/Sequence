@@ -46,12 +46,13 @@ function App() {
       path: "/test",
       element: <Test/>,
     },
-      path: "/createGame/:gameCode",
-      element: <CreateGamePage/>
+    { 
+    path: "/createGame/:gameCode",
+      element: <CreateGamePage/>,
     },
     {
       path: "/game/:gameCode",
-      element: <GameScreen />
+      element: <GameScreen />,
     }
   ]);
   return (
