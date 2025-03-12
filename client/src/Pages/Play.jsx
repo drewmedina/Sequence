@@ -26,18 +26,38 @@ const CardContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 0px;
-  margin-top: 100px;
+  margin-bottom: 50px;
 
 `;
 
 const BoardContainer = styled.div`
+  position: relative;
   display: flex;
-  margin-top: 20px;
-  margin-bottom: 80px; 
   justify-content: center;
   align-items: center;
-  max-height: 200px;
-  max-width: 980px;
+  width: 980px;
+  height: 750px; 
+  margin-top: -100px;
+  margin-left: 380px;
+`;
+
+const StyledBoardImage = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+`;
+
+const StyledGameBoard = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  margin-bottom: 110px;
+  margin-left: 202px;
 `;
 
 const HoverCard = styled.div`
@@ -49,7 +69,9 @@ const HoverCard = styled.div`
 
 const ButtonContainer = styled.div`
   height: 40px;
-  margin-bottom: -70px;
+  margin-top: 10px;
+  margin-bottom: -80px;
+  z-index: 3;  /* z index is 3 because otherwise the buttons can't be clicked, the board covers it.*/
 
 `;
 
@@ -86,28 +108,26 @@ function Play() {
 return (
   
   <AppContainer>
-    
-      
-      
-      <BoardContainer>
-      
-      <DefaultGameBoard />
- 
-        {/* <BoardImage /> */}
-            
-
-      </BoardContainer>
-
-         <div>
-         
-          
-       
-       {/* <Card rank={card.rank} suit={card.suit} /> */}
-       <ButtonContainer>
+    <ButtonContainer>
           <button type="button" onClick={setRandomCard}> New Cards </button>
           <button type="button" onClick={drawCardFromDeck}> Draw Card </button>
 
       </ButtonContainer>
+    <BoardContainer>
+      <StyledBoardImage>
+        <BoardImage />
+      </StyledBoardImage>
+    
+      <StyledGameBoard>
+          <DefaultGameBoard />
+      </StyledGameBoard>
+    </BoardContainer>
+
+    <div>
+         
+       
+       {/* <Card rank={card.rank} suit={card.suit} /> */}
+       
 
        <CardContainer>
           {cards.map((card, index) => (
