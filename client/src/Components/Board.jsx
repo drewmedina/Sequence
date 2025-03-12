@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from './GamePieces/Card';
+
 function DefaultGameBoard (){
    const boardData = [
     ["FX", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "FX"],
@@ -15,18 +16,23 @@ function DefaultGameBoard (){
   ]
   
   return(
-     <div style={{ 
+    
+     <div style={{
       display: "grid", 
       gridTemplateColumns: "repeat(10, 1fr)", 
-      gap: "3px", 
+      columnGap: "3px", 
+      rowGap: "14px",
+      width: "610px",
+      height: "750px",
       transform: "scale(0.35) rotate(90deg)", 
+      backgroundRepeat: "no-repeat",
       transformOrigin: "center",
     }}>
         {
     boardData.map((row) =>
     row.map((value) => {
       if (value === "FX") {
-        <div></div> // Keep "FREE" as text
+        <div></div>; // Keep "FREE" as text
       }
   
       const rank = value.slice(0, -1); // Extract number/face (e.g., "10", "K")
@@ -57,6 +63,7 @@ function DefaultGameBoard (){
     })
 )}
 </div>
+
 
   );
   
