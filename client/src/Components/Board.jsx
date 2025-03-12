@@ -1,8 +1,9 @@
 import React from 'react';
 import Card from './GamePieces/Card';
+
 function DefaultGameBoard (){
    const boardData = [
-    ["A♣", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "A♣"],
+    ["FX", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "FX"],
     ["A♣", "7♠", "6♠", "5♠", "4♠", "3♠", "2♠", "2♥", "3♥", "5♦"],
     ["K♣", "8♠", "10♣", "Q♣", "K♣", "A♣", "A♦", "K♦", "4♥", "4♦"],
     ["Q♣", "9♠", "9♣", "8♥", "9♥", "10♥", "Q♥", "Q♦", "5♥", "3♦"],
@@ -11,22 +12,27 @@ function DefaultGameBoard (){
     ["8♣", "K♠", "6♣", "5♣", "4♣", "3♣", "2♣", "8♦", "8♥", "K♠"],
     ["7♣", "A♠", "2♦", "3♦", "4♦", "5♦", "6♦", "7♦", "9♥", "Q♠"],
     ["6♣", "5♣", "4♣", "3♣", "2♣", "A♥", "K♥", "Q♥", "10♥", "10♠"],
-    ["A♣", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "A♣"],
+    ["FX", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "FX"],
   ]
   
   return(
-     <div style={{ 
+    
+     <div style={{
       display: "grid", 
       gridTemplateColumns: "repeat(10, 1fr)", 
-      gap: "3px", 
+      columnGap: "3px", 
+      rowGap: "14px",
+      width: "610px",
+      height: "750px",
       transform: "scale(0.35) rotate(90deg)", 
+      backgroundRepeat: "no-repeat",
       transformOrigin: "center",
     }}>
         {
     boardData.map((row) =>
     row.map((value) => {
-      if (value === "FREE") {
-        <div></div> // Keep "FREE" as text
+      if (value === "FX") {
+        <div></div>; // Keep "FREE" as text
       }
   
       const rank = value.slice(0, -1); // Extract number/face (e.g., "10", "K")
@@ -37,13 +43,14 @@ function DefaultGameBoard (){
         "♥": "hearts",
         "♦": "diamonds",
         "♠": "spades",
-        "♣": "clubs"
+        "♣": "clubs",
+        "X": "frees"
       };
       const suitFolder = suitMap[suitSymbol]; // Folder name (e.g., "Hearts")
   
       // Convert face card abbreviations to full names
       
-      const rankMap = { 2: "Two", 3: "Three" ,4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", "A": "Ace", "K": "King", "Q": "Queen",};
+      const rankMap = { 2: "Two", 3: "Three" ,4: "Four", 5: "Five", 6: "Six", 7: "Seven", 8: "Eight", 9: "Nine", 10: "Ten", "A": "Ace", "K": "King", "Q": "Queen", "F": "Free"};
       const formattedRank = rankMap[rank] || rank; // Use full name for face cards, else keep number
   
       // return {
@@ -56,6 +63,7 @@ function DefaultGameBoard (){
     })
 )}
 </div>
+
 
   );
   
