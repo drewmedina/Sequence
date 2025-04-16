@@ -1,19 +1,18 @@
 import React from "react";
-import boardImage from "../assets/brownboard.png"; 
+import boardImage from "../assets/brownboard.png";
 
 const BoardImage = () => {
   return (
-    <img 
-      src={boardImage} 
+    <img
+      src={boardImage}
       alt="Sequence Board"
       style={{
-        width: "610px",
-        height: "750px",
-        objectFit: "contain"
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
       }}
     />
   );
 };
-
 
 export default BoardImage;
