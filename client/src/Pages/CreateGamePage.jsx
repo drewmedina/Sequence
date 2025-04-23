@@ -64,7 +64,7 @@ function CreateGamePage() {
         style={{
           width: "80%",
           height: "10%",
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "#fff8dc",
           borderRadius: "6px",
           display: "flex",
           justifyContent: "center",
@@ -75,8 +75,8 @@ function CreateGamePage() {
             Waiting For Leader to Start the Game
           </h2>
         ) : (
-          <h2 style={{ color: "#000000" }}>
-            Waiting for Players to join the lobby
+          <h2 style={{ color: "#5e3b1e" }}>
+            Waiting for players to join the lobby...
           </h2>
         )}
       </div>
@@ -100,29 +100,54 @@ function CreateGamePage() {
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    width: "31%",
+                    gap: "0.5rem",
+                    width: "fit-content",
                   }}
                 >
                   <NumberOutlined />
                   <label>Number of Sequences:</label>
                 </div>
-                <InputNumber
+
+                <div style={{ display: "flex", gap: "1rem" }}>
+                  {[1, 2].map((val) => (
+                    <Button
+                      key={val}
+                      type={sequencesNeeded === val ? "primary" : "default"}
+                      onClick={() => handleSequenceChange(val)}
+                      style={{
+                        width: 48,
+                        height: 40,
+                        fontWeight: "bold",
+                        backgroundColor: sequencesNeeded === val ? "#5f9341" : "#fff8dc",
+                        borderColor: "#b08c5a",
+                        color: sequencesNeeded === val ? "white" : "#5a3e2b",
+                      }}
+                    >
+                      {val}
+                    </Button>
+                  ))}
+                  </div>
+
+
+                 {/* <InputNumber
                   min={1}
                   max={2}
                   style={{ margin: "0 16px" }}
                   value={sequencesNeeded}
                   onChange={handleSequenceChange}
-                />
+                /> */}
+                
+
+
               </div>
               <div className="time-per-move">
                 <div
                   style={{
                     display: "flex",
-                    justifyContent: "space-between",
                     alignItems: "center",
-                    width: "22%",
+                    gap: "0.5rem", 
+                    width: "fit-content",
                   }}
                 >
                   <FieldTimeOutlined />
@@ -151,12 +176,20 @@ function CreateGamePage() {
               <Button
                 disabled={lobbyUsers.length < 3}
                 onClick={handleStartGame}
-                color="green"
-                variant="solid"
+                type="primary"
               >
                 Start Game!
               </Button>
-              <Button onClick={handleLeaveGame}>Leave the Game😡</Button>
+
+
+              <Button
+                className="leave-button"
+                onClick={handleLeaveGame}
+              >
+                Leave the Game
+              </Button>
+              
+              {/* <Button onClick={handleLeaveGame}>Leave the Game</Button> */}
             </div>
           </div>
         </div>

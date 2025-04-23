@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar, Dropdown } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 
 function Header() {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
 
   const handleLogout = async () => {
     try {
@@ -70,11 +73,13 @@ function Header() {
             open={dropdownOpen}
             placement="bottomRight"
           >
-            <Avatar
-              size="small"
-              icon={<UserOutlined />}
-              style={{ backgroundColor: "#87d068", cursor: "pointer" }}
-            />
+           <Avatar
+            size="small"
+            src={currentUser?.avatar || undefined}
+            icon={!currentUser?.avatar && <UserOutlined />}
+            style={{ cursor: "pointer" }}
+          />
+
           </Dropdown>
         </div>
       ) : (
