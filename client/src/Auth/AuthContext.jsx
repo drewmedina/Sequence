@@ -6,6 +6,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../Firebase/firebase";
+import { updateProfile } from "firebase/auth";
 const AuthContext = React.createContext();
 
 export function useAuth() {
@@ -26,9 +27,10 @@ export function AuthProvider({ children }) {
         if (docSnapshot.exists()) {
           const userData = docSnapshot.data();
           setCurrentUser({
-            ...auth.currentUser,
+            // ...auth.currentUser,
+            ...user,
             username: userData.username,
-            avatar: userData.avatar,
+            avatar: userData.avatar || user.photoURL,
             wins: userData.wins,
             losses: userData.losses,
             friends: userData.friends,
@@ -42,26 +44,40 @@ export function AuthProvider({ children }) {
       throw new Error("Passwords Do Not Match");
     }
     return createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        return setDoc(doc(db, "users", user.uid), {
-          username: username,
-          avatar: "avatar",
-          email: email,
-          wins: 0,
-          losses: 0,
-          friends: [],
-        });
-      })
-      .then(() => {
-        setCurrentUser({ ...auth.currentUser, username });
-      })
-      .catch((e) => {
-        console.log(e);
-        throw new Error(e.code);
-      });
-  }
+    .then(async (userCredential) => {
+      const user = userCredential.user;
 
+      const avatarOptions = [
+        "/Assets/dog.png",
+        "/Assets/duck.png",
+        "/Assets/lion.png",
+        "/Assets/panda.png",
+      ];
+      const randomAvatar =
+        avatarOptions[Math.floor(Math.random() * avatarOptions.length)];
+
+      await setDoc(doc(db, "users", user.uid), {
+        username: username,
+        avatar: randomAvatar,
+        email: email,
+        wins: 0,
+        losses: 0,
+        friends: [],
+      });
+
+      await updateProfile(user, {
+        photoURL: randomAvatar,
+      });
+
+      setCurrentUser({ ...user, username, avatar: randomAvatar });
+    })
+    .catch((e) => {
+      console.log(e);
+      throw new Error(e.code);
+    });
+
+  }
+  
   function logout() {
     return auth.signOut();
   }
@@ -98,6 +114,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    setCurrentUser,
     signup,
     signin,
     logout,
