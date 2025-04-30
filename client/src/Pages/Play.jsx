@@ -6,15 +6,16 @@ import {
   drawCard,
 } from "../Components/GamePieces/Deck";
 import Card from "../Components/GamePieces/Card";
-import Hand from "../Components/GamePieces/Hand";
 import BoardImage from "../Components/BoardImage";
 import DefaultGameBoard from "../Components/Board";
 import Avatar from "antd/es/avatar/Avatar";
 import { UserOutlined } from "@ant-design/icons";
+import { useAuth } from "../Auth/AuthContext";
+import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import socket from "../Firebase/socket";
 import UserWaitingComponent from "../Components/UserWaitingComponent";
 import MenuSettings from "../Components/MenuSettings";
-
-
 
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
@@ -79,35 +80,36 @@ const ButtonContainer = styled.div`
   margin-bottom: -80px;
   z-index: 3; /* z index is 3 because otherwise the buttons can't be clicked, the board covers it.*/
 `;
-const startingBoard = [
-  ["FX", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "FX"],
-  ["A♣", "7♠", "6♠", "5♠", "4♠", "3♠", "2♠", "2♥", "3♥", "5♦"],
-  ["K♣", "8♠", "10♣", "Q♣", "K♣", "A♣", "A♦", "K♦", "4♥", "4♦"],
-  ["Q♣", "9♠", "9♣", "8♥", "9♥", "10♥", "Q♥", "Q♦", "5♥", "3♦"],
-  ["10♣", "10♠", "8♣", "7♥", "2♥", "3♥", "K♥", "10♦", "6♥", "2♦"],
-  ["9♣", "Q♠", "7♣", "6♥", "5♥", "4♥", "A♥", "9♦", "7♥", "A♠"],
-  ["8♣", "K♠", "6♣", "5♣", "4♣", "3♣", "2♣", "8♦", "8♥", "K♠"],
-  ["7♣", "A♠", "2♦", "3♦", "4♦", "5♦", "6♦", "7♦", "9♥", "Q♠"],
-  ["6♣", "5♣", "4♣", "3♣", "2♣", "A♥", "K♥", "Q♥", "10♥", "10♠"],
-  ["FX", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "FX"],
-];
-//gap: 1rem; /* Adjust space between cards */
+
 function Play() {
-  const hand = Hand();
-  const [cards, setCards] = useState(hand.getCards());
+  const location = useLocation();
+  const initialGameState = location.state;
+  const { currentUser } = useAuth();
+  const { gameCode: urlGameCode } = useParams();
+  const [gameCode, setGameCode] = useState(urlGameCode || "");
+  useEffect(() => {
+    socket.on("game-update", (gameState) => {
+      console.log("Received game update");
+      setBoard(gameState.board);
+      setCards(gameState.hands[currentUser.email]);
+      setCurrentPlayer(gameState.players[gameState.currentTurnIndex]);
+      setWinner(gameState.winner);
+    });
+    socket.on("game-error", (error) => {
+      alert(error);
+    });
+    return () => {
+      socket.off("game-update");
+    };
+  }, [gameCode]);
+  const [hand, setHand] = useState(initialGameState.deck);
+  const [cards, setCards] = useState(initialGameState.hands[currentUser.email]);
   const [selectedCard, setSelectedCard] = useState(null);
-  const [board, setBoard] = useState(startingBoard);
-  const setRandomCard = () => {
-    setCards([
-      getCard(),
-      getCard(),
-      getCard(),
-      getCard(),
-      getCard(),
-      getCard(),
-      getCard(),
-    ]);
-  };
+  const [board, setBoard] = useState(initialGameState.board);
+  const [currentPlayer, setCurrentPlayer] = useState(
+    initialGameState.players[initialGameState.currentTurnIndex]
+  );
+  const [winner, setWinner] = useState(null);
 
   const [discardPile, setDiscardPile] = useState([]);
   const discardCard = (index) => {
@@ -117,21 +119,30 @@ function Play() {
     removeCardFromDeck(discardedCard);
   };
 
-  const drawCardFromDeck = () => {
-    const newCard = drawCard(); // Draw a card from the deck
-    setCards((prevCards) => [...prevCards, newCard]); // Add the new card to the hand
-  };
   useEffect(() => {
     if (selectedCard) {
-      console.log("hello", selectedCard);
-      var new_board = board;
-      new_board[selectedCard.row][selectedCard.col] =
-        board[selectedCard.row][selectedCard.col] + "#000000";
-      setBoard(new_board);
+      console.log(selectedCard.row, selectedCard.col);
+      socket.emit(
+        "play-turn",
+        gameCode,
+        currentUser,
+        selectedCard.row,
+        selectedCard.col
+      );
     }
   }, [selectedCard]);
+  useEffect(() => {
+    if (winner) {
+      console.log("winner", winner.email);
+    }
+  }, [winner]);
   return (
     <AppContainer>
+      <h1 style={{ width: "100%", height: "10px" }}>
+        {currentUser.username}
+        {currentPlayer.username}
+        {winner ? winner.username : ""}
+      </h1>
       
       <ButtonContainer>
         <button type="button" onClick={setRandomCard}>
