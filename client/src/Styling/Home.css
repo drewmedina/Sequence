@@ -3,6 +3,7 @@
   height: 100%;
   background-repeat: no-repeat;
   background-size: cover;
+  font-family: 'Cinzel', serif; 
   display: flex;
   box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
 }
@@ -46,17 +47,20 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 6%;
+
 }
 .button {
   width: 80%;
   padding: 10px;
   font-size: 16px;
+  margin-top: -10%;
+  margin-bottom: 12%;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 .create-button {
-  background-color: #50c878;
+  background-color: #5f9341;
 }
 .username {
   color: #f7fdad; /* Gold / Yellow color */
