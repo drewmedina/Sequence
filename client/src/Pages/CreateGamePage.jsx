@@ -28,13 +28,15 @@ function CreateGamePage() {
       console.log("Received lobby update:", users);
       setLobbyUsers(users);
     });
-    
-    
+    socket.on("game-starting", (gameData) => {
+      console.log("Game started!", gameData);
+      navigate(`/play/${gameCode}`, { state: gameData });
+    });
     return () => {
+      socket.off("game-starting");
       socket.off("lobby-update");
       socket.off("game-created");
     };
-
   }, [gameCode]);
 
   const handleSequenceChange = (e) => {
@@ -46,7 +48,7 @@ function CreateGamePage() {
   };
 
   const handleStartGame = (e) => {
-    navigate(`/game/${gameCode}`);
+    socket.emit("start-game", gameCode);
   };
 
   const handleLeaveGame = (e) => {
@@ -56,7 +58,12 @@ function CreateGamePage() {
   return (
     <div className="create-game-container">
       <div className="game-code-box">
-        <h2>Game Code: <span style={{ color: "#f7fdad" }}>{gameCode || "Generating..."}</span></h2>
+        <h2>
+          Game Code:{" "}
+          <span style={{ color: "#f7fdad" }}>
+            {gameCode || "Generating..."}
+          </span>
+        </h2>
       </div>
 
       <div

@@ -12,7 +12,6 @@ const HoverCard = styled.div`
 
 function DefaultGameBoard({ boardData, setSelectedCard }) {
   const { currentUser } = useAuth();
-
   return (
     <div
       style={{
