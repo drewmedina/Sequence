@@ -25,12 +25,16 @@ function Login() {
     <Box
       className="Background"
       sx={{
+        fontFamily: "'Cinzel', serif",
         width: "100vw",
         height: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#936737",
+        backgroundImage: "url('/Assets/PaperBackground.jpg')",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
       }}
     >
       <Stack
