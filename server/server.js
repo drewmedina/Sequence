@@ -2,7 +2,8 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
-
+const { GameState } = require("./GameState.js");
+const { error } = require("console");
 const PORT = process.env.PORT || 3001;
 
 const app = express();
@@ -65,7 +66,7 @@ io.on("connection", (socket) => {
       return;
     }
     // Create the lobby and add the first player
-    gameLobbies[gameCode] = [username];
+    gameLobbies[gameCode] = new GameState([username]);
     socket.join(gameCode);
     console.log(`Game created with code ${gameCode} by ${username}`);
     io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
@@ -96,13 +97,13 @@ io.on("connection", (socket) => {
     }
 
     // Ensure the user is not already in the lobby
-    if (!gameLobbies[gameCode].includes(username)) {
-      gameLobbies[gameCode].push(username);
+    if (!gameLobbies[gameCode].getPlayers().includes(username)) {
+      gameLobbies[gameCode].addPlayer(username);
       socket.join(gameCode);
       console.log(`${username} successfully joined lobby ${gameCode}`);
       console.log(
         `🔵 Emitting lobby-update with users:`,
-        gameLobbies[gameCode]
+        gameLobbies[gameCode].getPlayers()
       );
       io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
     } else {
@@ -120,19 +121,44 @@ io.on("connection", (socket) => {
   socket.on("leave-lobby", (gameCode, username) => {
     // If the game lobby exists, remove the player from the list
     if (gameLobbies[gameCode]) {
-      gameLobbies[gameCode] = gameLobbies[gameCode].filter(
+      gameLobbies[gameCode].players = gameLobbies[gameCode].players.filter(
         (user) => user !== username
       );
       io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
     }
     socket.leave(gameCode);
   });
+
   socket.on("get-players", (gameCode) => {
     if (gameLobbies[gameCode]) {
-      io.to(gameCode).emit("lobby-update", gameLobbies[gameCode]);
+      io.to(gameCode).emit("lobby-update", gameLobbies[gameCode].getPlayers());
     }
   });
-
+  socket.on("start-game", (gameCode) => {
+    if (
+      gameLobbies[gameCode] &&
+      gameLobbies[gameCode].getPlayers().length == 3
+    ) {
+      gameLobbies[gameCode].gameStarted = true;
+      io.to(gameCode).emit("game-starting", gameLobbies[gameCode]);
+    }
+  });
+  socket.on("play-turn", (gameCode, username, row, col) => {
+    if (gameLobbies[gameCode] && gameLobbies[gameCode].gameStarted) {
+      try {
+        console.log("attempting to play", row, col);
+        gameLobbies[gameCode].playCard(username, row, col);
+        console.log("winner?", gameLobbies[gameCode].winner);
+        io.to(gameCode).emit("game-update", gameLobbies[gameCode]);
+      } catch (e) {
+        console.log("fail", e);
+        io.to(gameCode).emit(
+          "game-error",
+          e.message || "An unknown error occurred."
+        );
+      }
+    }
+  });
   /**
    * Handles when a player disconnects from the server.
    *
