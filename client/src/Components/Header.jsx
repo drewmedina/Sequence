@@ -50,18 +50,28 @@ function Header() {
         padding: "2px",
       }}
     >
-      <img
+      {/* <img
         src="../../Assets/logo.gif"
-        style={{ height: "60%", padding: "4px" }}
-      ></img>
+        style={{ height: "0%", padding: "4px" }}
+      ></img> */}
+      <h1 style={{
+        color: "#f7fdad",
+        fontSize: "24px",
+        fontWeight: "bold",
+        paddingLeft: "10px",
+        fontFamily: "'Cinzel', serif",
+      }}>
+        Sequence
+      </h1>
       {currentUser ? (
         <div
           style={{
+            fontFamily: "'Cinzel', serif",
             padding: "10px",
             display: "flex",
             alignItems: "center",
-            spacing: "5px",
-            width: "9%",
+            gap: "8px",
+            width: "auto",
             justifyContent: "space-between",
           }}
           onMouseEnter={() => setDropdownOpen(true)}
