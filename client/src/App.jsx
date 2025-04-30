@@ -10,7 +10,6 @@ import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import CreateGamePage from "./Pages/CreateGamePage";
-import GameScreen from "./Pages/GameScreen";
 import Play from "./Pages/Play";
 import Test from "./Pages/Test";
 import Header from "./Components/Header";
@@ -36,10 +35,9 @@ function App() {
       children: [
         { index: true, element: <Home /> },
         { path: "createGame/:gameCode", element: <CreateGamePage /> },
-        { path: "play", element: <Play /> },
+        { path: "play/:gameCode", element: <Play /> },
         { path: "test", element: <Test /> },
-        { path: "game/:gameCode", element: <GameScreen /> },
-        {path: "profile", element: <ProfilePage />},
+        { path: "profile", element: <ProfilePage /> },
       ],
     },
     {
