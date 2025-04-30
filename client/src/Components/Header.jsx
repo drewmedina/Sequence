@@ -56,7 +56,7 @@ function Header() {
       ></img> */}
       <h1 style={{
         color: "#f7fdad",
-        fontSize: "24px",
+        fontSize: "40px",
         fontWeight: "bold",
         paddingLeft: "10px",
         fontFamily: "'Cinzel', serif",
@@ -68,6 +68,7 @@ function Header() {
           style={{
             fontFamily: "'Cinzel', serif",
             padding: "10px",
+            fontSize: "25px",
             display: "flex",
             alignItems: "center",
             gap: "8px",
