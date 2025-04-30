@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
             // ...auth.currentUser,
             ...user,
             username: userData.username,
-            avatar: userData.avatar || user.photoURL,
+            avatar: userData.avatar ?? user.photoURL,
             wins: userData.wins,
             losses: userData.losses,
             friends: userData.friends,
@@ -87,13 +87,16 @@ export function AuthProvider({ children }) {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          const docSnapshot = await getDoc(doc(db, "users", user.uid));
+          await user.reload(); // Ensure we have the latest user data
+          const refreshedUser = auth.currentUser;
+  
+          const docSnapshot = await getDoc(doc(db, "users", refreshedUser.uid));
           if (docSnapshot.exists()) {
             const userData = docSnapshot.data();
             setCurrentUser({
-              ...user,
+              ...refreshedUser,
               username: userData.username,
-              avatar: userData.avatar,
+              avatar: userData.avatar || refreshedUser.photoURL,
               wins: userData.wins,
               losses: userData.losses,
               friends: userData.friends,
@@ -111,6 +114,7 @@ export function AuthProvider({ children }) {
     });
     return unsubscribe;
   }, []);
+  
 
   const value = {
     currentUser,

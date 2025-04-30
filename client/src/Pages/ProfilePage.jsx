@@ -7,7 +7,8 @@ import { updateEmail, updatePassword } from "firebase/auth";
 import { auth } from "../Firebase/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "../Firebase/firebase";
 
 
 
@@ -56,66 +57,106 @@ const ProfilePage = () => {
 
   const handleSaveAvatar = async () => {
     try {
+      setLoading(true);
       const uid = auth.currentUser.uid;
-  
-      await updateDoc(doc(db, "users", uid), {
-        avatar: avatarUrl,
-      });
   
       await updateProfile(auth.currentUser, {
         photoURL: avatarUrl,
       });
   
-      setCurrentUser((prev) => ({
-        ...prev,
+      await updateDoc(doc(db, "users", uid), {
         avatar: avatarUrl,
-      }));
+      });
   
-      message.success("avatar wass updated!");
+      await auth.currentUser.reload();
+      const refreshedUser = auth.currentUser;
+  
+      const docSnapshot = await getDoc(doc(db, "users", uid));
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        setCurrentUser({
+          ...refreshedUser,
+          username: userData.username,
+          avatar: userData.avatar || refreshedUser.photoURL,
+          wins: userData.wins,
+          losses: userData.losses,
+          friends: userData.friends,
+        });
+      }
+  
+      message.success("Avatar updated successfully!");
     } catch (error) {
-      console.error("avatar update failed", error);
-      message.error("could not update avatar");
+      console.error("Failed to update avatar:", error);
+      message.error("Failed to update avatar");
+    } finally {
+      setLoading(false);
     }
   };
+  
+  
   
 
   return (
     <Card title="Profile" style={{ maxWidth: 400, margin: "50px auto" }}>
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <Avatar
-          size={100}
-          src={avatarUrl}
-          icon={!avatarUrl && <UserOutlined />}
-          style={{ marginBottom: 10 }}
-          />
-          <p style={{ fontWeight: "bold", marginBottom: 5 }}>Select an Avatar:</p>
-          <div
+     <div style={{ textAlign: "center", marginBottom: 20 }}>
+      <Avatar
+        size={100}
+        src={avatarUrl}
+        icon={!avatarUrl && <UserOutlined />}
+        style={{ 
+          marginBottom: 20,
+          border: "2px solid #d9d9d9",
+          backgroundColor: "#f5f5f5"
+        }}
+      />
+      <p style={{ 
+        fontWeight: "bold", 
+        marginBottom: 15,
+        fontSize: 16 
+      }}>
+        Select an Avatar:
+      </p>
+      
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "15px",
+          flexWrap: "wrap",
+          marginBottom: 20,
+        }}
+      >
+        {avatarOptions.map((url, index) => (
+          <Avatar
+            key={index}
+            src={url}
+            size={64}
             style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "10px",
-              flexWrap: "wrap",
-              marginBottom: 10,
+              border: avatarUrl === url ? "3px solid #1890ff" : "2px solid #d9d9d9",
+              cursor: "pointer",
+              transform: avatarUrl === url ? "scale(1.1)" : "scale(1)",
+              transition: "all 0.3s ease",
+              boxShadow: avatarUrl === url ? "0 0 10px rgba(24, 144, 255, 0.5)" : "none"
             }}
-          >
-            {avatarOptions.map((url, index) => (
-              <Avatar
-                key={index}
-                src={url}
-                size={64}
-                style={{
-                  border: avatarUrl === url ? "3px solid #5f9341" : "2px solid #ccc",
-                  cursor: "pointer",
-                  transition: "0.2s ease",
-                }}
-                onClick={() => setAvatarUrl(url)}
-              />
-            ))}
-          </div>
-          <Button type="primary" onClick={handleSaveAvatar}>
-            Save Avatar
-          </Button>
-        </div>
+            onClick={() => setAvatarUrl(url)}
+          />
+        ))}
+      </div>
+      
+  <Button 
+    type="primary" 
+    onClick={handleSaveAvatar}
+    loading={loading}
+    style={{ 
+      marginTop: 10,
+      width: "150px",
+      height: "40px",
+      fontSize: 16
+    }}
+  >
+    Save Avatar
+  </Button>
+</div>
 
       <div style={{ marginBottom: 20 }}>
         <p>
