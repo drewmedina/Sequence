@@ -6,6 +6,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "../Styling/Home.css";
 
+
 function Home() {
   const { currentUser } = useAuth();
   const [gameCode, setGameCode] = useState("");
@@ -13,6 +14,7 @@ function Home() {
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
+
 
   const handleCreateGameClick = (e) => {
     console.log("press");
@@ -89,7 +91,13 @@ function Home() {
         <img src="/Assets/logo.gif" alt="Logo" className="logo" />
         <div className="lobby-container">
           <div className="avatar-container">
-            <Avatar icon={<UserOutlined />} className="avatar" />
+          <Avatar
+            size={64}
+            src={currentUser?.avatar}
+            icon={!currentUser?.avatar && <UserOutlined />}
+            className="avatar"
+            alt="User avatar"
+          />
             <h2 className="username">{currentUser.username}</h2>
           </div>
           <div className="buttons-container">
@@ -108,6 +116,7 @@ function Home() {
               >
                 Join a game
               </button>
+              
             ) : (
               <input
                 type="text"
