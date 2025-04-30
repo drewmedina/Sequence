@@ -18,9 +18,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   function signin(email, password) {
+    let user = null;
     return signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
+        user = userCredential.user;
         return getDoc(doc(db, "users", user.uid));
       })
       .then((docSnapshot) => {
@@ -44,44 +45,42 @@ export function AuthProvider({ children }) {
       throw new Error("Passwords Do Not Match");
     }
     return createUserWithEmailAndPassword(auth, email, password)
-    .then(async (userCredential) => {
-      const user = userCredential.user;
+      .then(async (userCredential) => {
+        const user = userCredential.user;
 
-      const avatarOptions = [
-        "/Assets/dog.png",
-        "/Assets/duck.png",
-        "/Assets/lion.png",
-        "/Assets/panda.png",
-      ];
-      const randomAvatar =
-        avatarOptions[Math.floor(Math.random() * avatarOptions.length)];
+        const avatarOptions = [
+          "/Assets/dog.png",
+          "/Assets/duck.png",
+          "/Assets/lion.png",
+          "/Assets/panda.png",
+        ];
+        const randomAvatar =
+          avatarOptions[Math.floor(Math.random() * avatarOptions.length)];
 
-      await setDoc(doc(db, "users", user.uid), {
-        username: username,
-        avatar: randomAvatar,
-        email: email,
-        wins: 0,
-        losses: 0,
-        friends: [],
+        await setDoc(doc(db, "users", user.uid), {
+          username: username,
+          avatar: randomAvatar,
+          email: email,
+          wins: 0,
+          losses: 0,
+          friends: [],
+        });
+
+        await updateProfile(user, {
+          photoURL: randomAvatar,
+        });
+
+        setCurrentUser({ ...user, username, avatar: randomAvatar });
+      })
+      .catch((e) => {
+        console.log(e);
+        throw new Error(e.code);
       });
-
-      await updateProfile(user, {
-        photoURL: randomAvatar,
-      });
-
-      setCurrentUser({ ...user, username, avatar: randomAvatar });
-    })
-    .catch((e) => {
-      console.log(e);
-      throw new Error(e.code);
-    });
-
   }
-  
+
   function logout() {
     return auth.signOut();
   }
-
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {

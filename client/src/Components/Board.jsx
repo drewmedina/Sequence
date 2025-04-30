@@ -12,7 +12,6 @@ const HoverCard = styled.div`
 
 function DefaultGameBoard({ boardData, setSelectedCard }) {
   const { currentUser } = useAuth();
-
   return (
     <div
       style={{
@@ -20,7 +19,7 @@ function DefaultGameBoard({ boardData, setSelectedCard }) {
         gridTemplateColumns: "repeat(10, 1fr)",
         columnGap: "3px",
         rowGap: "14px",
-        transform: "scale(.6) rotate(90deg)",
+        transform: "scale(.5) rotate(90deg)",
         backgroundRepeat: "no-repeat",
         transformOrigin: "center",
       }}

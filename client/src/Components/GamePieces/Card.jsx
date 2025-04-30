@@ -107,6 +107,7 @@ const cardSymbols = {
 
 function Card({ rank, suit, token = null }) {
   if (!token) {
+    console.log("printing", suit, rank);
     return <CardBox suit={suit}>{cardSymbols[suit][rank]}</CardBox>;
   } else {
     return (
