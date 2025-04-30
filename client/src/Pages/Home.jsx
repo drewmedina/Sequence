@@ -9,6 +9,10 @@ import "../Styling/Home.css";
 
 function Home() {
   const { currentUser } = useAuth();
+  useEffect(() => {
+    console.log("Current user updated:", currentUser);
+  }, [currentUser]);
+  
   const [gameCode, setGameCode] = useState("");
   const [lobbyUsers, setLobbyUsers] = useState([]);
   const [error, setError] = useState("");
@@ -91,13 +95,15 @@ function Home() {
         <img src="/Assets/logo.gif" alt="Logo" className="logo" />
         <div className="lobby-container">
           <div className="avatar-container">
-          <Avatar
-            size={64}
-            src={currentUser?.avatar}
-            icon={!currentUser?.avatar && <UserOutlined />}
-            className="avatar"
-            alt="User avatar"
-          />
+          {currentUser && (
+            <Avatar
+              size={64}
+              src={currentUser.avatar}
+              icon={!currentUser.avatar && <UserOutlined />}
+              className="avatar"
+              alt="User avatar"
+            />
+          )}
             <h2 className="username">{currentUser.username}</h2>
           </div>
           <div className="buttons-container">
