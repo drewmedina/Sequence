@@ -5,9 +5,24 @@ import { UploadOutlined, UserOutlined } from "@ant-design/icons";
 import { useAuth } from "../Auth/AuthContext";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { auth } from "../Firebase/firebase";
+import { useNavigate, useLocation } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
+
+
+
+const avatarOptions = [
+  "/Assets/dog.png",
+  "/Assets/duck.png",
+  "/Assets/lion.png",
+  "/Assets/panda.png",
+];
 
 const ProfilePage = () => {
-  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const previousPage = location.state?.from || "/";
+  const { currentUser, setCurrentUser } = useAuth();
   // Use currentUser.avatar if available or fallback to null
   const [avatarUrl, setAvatarUrl] = useState(currentUser?.avatar || null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +54,31 @@ const ProfilePage = () => {
     }
   };
 
+  const handleSaveAvatar = async () => {
+    try {
+      const uid = auth.currentUser.uid;
+  
+      await updateDoc(doc(db, "users", uid), {
+        avatar: avatarUrl,
+      });
+  
+      await updateProfile(auth.currentUser, {
+        photoURL: avatarUrl,
+      });
+  
+      setCurrentUser((prev) => ({
+        ...prev,
+        avatar: avatarUrl,
+      }));
+  
+      message.success("avatar wass updated!");
+    } catch (error) {
+      console.error("avatar update failed", error);
+      message.error("could not update avatar");
+    }
+  };
+  
+
   return (
     <Card title="Profile" style={{ maxWidth: 400, margin: "50px auto" }}>
       <div style={{ textAlign: "center", marginBottom: 20 }}>
@@ -46,17 +86,37 @@ const ProfilePage = () => {
           size={100}
           src={avatarUrl}
           icon={!avatarUrl && <UserOutlined />}
-        />
-        <Upload
-          showUploadList={false}
-          beforeUpload={() => false} 
-          onChange={handleAvatarChange}
-        >
-          <Button icon={<UploadOutlined />} style={{ marginTop: 10 }}>
-            Change Avatar
+          style={{ marginBottom: 10 }}
+          />
+          <p style={{ fontWeight: "bold", marginBottom: 5 }}>Select an Avatar:</p>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "10px",
+              flexWrap: "wrap",
+              marginBottom: 10,
+            }}
+          >
+            {avatarOptions.map((url, index) => (
+              <Avatar
+                key={index}
+                src={url}
+                size={64}
+                style={{
+                  border: avatarUrl === url ? "3px solid #5f9341" : "2px solid #ccc",
+                  cursor: "pointer",
+                  transition: "0.2s ease",
+                }}
+                onClick={() => setAvatarUrl(url)}
+              />
+            ))}
+          </div>
+          <Button type="primary" onClick={handleSaveAvatar}>
+            Save Avatar
           </Button>
-        </Upload>
-      </div>
+        </div>
+
       <div style={{ marginBottom: 20 }}>
         <p>
           <strong>Username:</strong> {currentUser?.username || "N/A"}
@@ -101,6 +161,11 @@ const ProfilePage = () => {
           </Button>
         </Form.Item>
       </Form>
+      <div style={{ textAlign: "center", marginTop: 30 }}>
+      <Button type="default" onClick={() => navigate(previousPage)}>
+        Return to Game
+      </Button>
+    </div>
     </Card>
   );
 };

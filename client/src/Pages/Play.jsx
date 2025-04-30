@@ -14,6 +14,8 @@ import { useAuth } from "../Auth/AuthContext";
 import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import socket from "../Firebase/socket";
+import UserWaitingComponent from "../Components/UserWaitingComponent";
+import MenuSettings from "../Components/MenuSettings";
 
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
@@ -36,7 +38,7 @@ const CardContainer = styled.div`
 `;
 
 const BoardContainer = styled.div`
-  position: relative;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -46,7 +48,7 @@ const BoardContainer = styled.div`
 `;
 
 const StyledBoardImage = styled.div`
-  position: relative;
+  position: absolute;
   /* top: 0; */
   /* left: 0; */
   width: 80%;
@@ -141,6 +143,19 @@ function Play() {
         {currentPlayer.username}
         {winner ? winner.username : ""}
       </h1>
+      
+      <ButtonContainer>
+        <button type="button" onClick={setRandomCard}>
+          {" "}
+          New Cards{" "}
+        </button>
+        <button type="button" onClick={drawCardFromDeck}>
+          {" "}
+          Draw Card{" "}
+        </button>
+        
+      </ButtonContainer>
+      {/* <MenuSettings></MenuSettings> */}
       <div
         style={{
           height: "100%",
@@ -150,11 +165,10 @@ function Play() {
           alignItems: "center",
         }}
       >
-        <Avatar
-          size="large"
-          icon={<UserOutlined />}
-          style={{ backgroundColor: "#87d068", cursor: "pointer" }}
-        />
+        
+        <UserWaitingComponent user={{ username: "Anisha" }} />
+       
+
         <BoardContainer>
           <StyledBoardImage>
             <BoardImage />
@@ -166,11 +180,8 @@ function Play() {
             />
           </StyledGameBoard>
         </BoardContainer>
-        <Avatar
-          size="large"
-          icon={<UserOutlined />}
-          style={{ backgroundColor: "#87d068", cursor: "pointer" }}
-        />
+        
+        <UserWaitingComponent user={{ username: "Anisha" }} />
       </div>
 
       <div>
