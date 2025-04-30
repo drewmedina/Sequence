@@ -38,7 +38,6 @@ const CardContainer = styled.div`
 `;
 
 const BoardContainer = styled.div`
-  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,16 +50,16 @@ const StyledBoardImage = styled.div`
   position: absolute;
   /* top: 0; */
   /* left: 0; */
-  width: 80%;
-  height: 85%;
+  width: 60%;
+  height: 65%;
   z-index: 1;
   pointer-events: none;
 `;
 
 const StyledGameBoard = styled.div`
   position: absolute;
-  width: 80%;
-  height: 85%;
+  width: 60%;
+  height: 65%;
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -81,6 +80,13 @@ const ButtonContainer = styled.div`
   z-index: 3; /* z index is 3 because otherwise the buttons can't be clicked, the board covers it.*/
 `;
 
+const CurrentUserContainer = styled.div`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+`;
+
 function Play() {
   const location = useLocation();
   const initialGameState = location.state;
@@ -96,7 +102,13 @@ function Play() {
       setWinner(gameState.winner);
     });
     socket.on("game-error", (error) => {
-      alert(error);
+      if (typeof error === "string") {
+        alert(error);
+      } else if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert(JSON.stringify(error));
+      }
     });
     return () => {
       socket.off("game-update");
@@ -139,35 +151,36 @@ function Play() {
   return (
     <AppContainer>
       <h1 style={{ width: "100%", height: "10px" }}>
-        {currentUser.username}
-        {currentPlayer.username}
         {winner ? winner.username : ""}
       </h1>
-      
-      <ButtonContainer>
-        <button type="button" onClick={setRandomCard}>
-          {" "}
-          New Cards{" "}
-        </button>
-        <button type="button" onClick={drawCardFromDeck}>
-          {" "}
-          Draw Card{" "}
-        </button>
-        
-      </ButtonContainer>
-      {/* <MenuSettings></MenuSettings> */}
       <div
         style={{
           height: "100%",
-          width: "90%",
+          width: "98%",
           display: "flex",
           direction: "row",
           alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        
-        <UserWaitingComponent user={{ username: "Anisha" }} />
-       
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {initialGameState.players
+            .filter((player) => player.email !== currentUser.email)
+            .slice(0, Math.ceil((initialGameState.players.length - 1) / 2)) // First half
+            .map((player, index) => (
+              <UserWaitingComponent
+                key={index}
+                user={player}
+                isCurrentTurn={currentPlayer.email === player.email}
+              />
+            ))}
+        </div>
 
         <BoardContainer>
           <StyledBoardImage>
@@ -180,8 +193,25 @@ function Play() {
             />
           </StyledGameBoard>
         </BoardContainer>
-        
-        <UserWaitingComponent user={{ username: "Anisha" }} />
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          {initialGameState.players
+            .filter((player) => player.email !== currentUser.email)
+            .slice(Math.ceil((initialGameState.players.length - 1) / 2)) // Second half
+            .map((player, index) => (
+              <UserWaitingComponent
+                key={index + 1000} // different key space from left column
+                user={player}
+                isCurrentTurn={currentPlayer.email === player.email}
+              />
+            ))}
+        </div>
       </div>
 
       <div>
@@ -198,6 +228,12 @@ function Play() {
           ))}
         </CardContainer>
       </div>
+      <CurrentUserContainer>
+        <UserWaitingComponent
+          user={currentUser}
+          isCurrentTurn={currentPlayer.email === currentUser.email}
+        />
+      </CurrentUserContainer>
     </AppContainer>
   );
 }
