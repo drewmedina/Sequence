@@ -152,7 +152,10 @@ io.on("connection", (socket) => {
         io.to(gameCode).emit("game-update", gameLobbies[gameCode]);
       } catch (e) {
         console.log("fail", e);
-        io.to(gameCode).emit("game-error", e);
+        io.to(gameCode).emit(
+          "game-error",
+          e.message || "An unknown error occurred."
+        );
       }
     }
   });

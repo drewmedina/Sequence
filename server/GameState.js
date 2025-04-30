@@ -50,7 +50,7 @@ export class GameState {
     };
     this.currentTurnIndex = 0;
     this.gameStarted = false;
-    this.colors = ["#000000", "#777777", "#FFFFFF"];
+    this.colors = ["#000000", "#777777", "#F78FD1"];
     this.winner = null;
   }
 
