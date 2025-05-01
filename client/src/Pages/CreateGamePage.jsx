@@ -6,6 +6,7 @@ import UserWaitingComponent from "../Components/UserWaitingComponent";
 import "../Styling/CreateGamePage.css";
 import { Slider, Row, Col, InputNumber, Button } from "antd";
 import { NumberOutlined, FieldTimeOutlined } from "@ant-design/icons";
+import HowToModal from "../Components/HowTo";
 function CreateGamePage() {
   const { currentUser } = useAuth();
   const { gameCode: urlGameCode } = useParams();
@@ -201,6 +202,7 @@ function CreateGamePage() {
           </div>
         </div>
       </div>
+      <HowToModal />
     </div>
   );
 }
