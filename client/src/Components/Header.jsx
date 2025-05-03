@@ -6,6 +6,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 import { Modal } from "antd";
 import styled from "styled-components";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../Firebase/firebase";
+import { useEffect } from "react";
+
+
 
 
 const LeaderboardContent = styled.div`
@@ -58,9 +63,36 @@ function Header() {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if (isLeaderboardVisible) {
+      const fetchLeaderboard = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, "users"));
+          const users = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.wins !== undefined) {
+              users.push({ username: data.username || "Unknown", wins: data.wins });
+            }
+          });
+  
+          // Sort by wins descending and take top 3
+          const top3 = users.sort((a, b) => b.wins - a.wins).slice(0, 5);
+          setLeaderboardData(top3);
+        } catch (error) {
+          console.error("Failed to fetch leaderboard:", error);
+        }
+      };
+  
+      fetchLeaderboard();
+    }
+  }, [isLeaderboardVisible]);
+  
 
   const handleLogout = async () => {
     try {
@@ -163,21 +195,19 @@ function Header() {
         footer={null}
       >
         <LeaderboardContent>
-          <div className="row first-place">
-            <span className="rank">1.</span>
-            <span className="name">Alice</span>
-            <span className="wins">🏆 10 wins</span>
-          </div>
-          <div className="row">
-            <span className="rank">2.</span>
-            <span className="name">Bob</span>
-            <span className="wins">8 wins</span>
-          </div>
-          <div className="row">
-            <span className="rank">3.</span>
-            <span className="name">Charlie</span>
-            <span className="wins">6 wins</span>
-          </div>
+          {leaderboardData.map((user, index) => (
+      <div
+      className={`row ${index === 0 ? "first-place" : ""}`}
+      key={user.username}
+    >
+      <span className="rank">{index + 1}.</span>
+      <span className="name">{user.username}</span>
+      <span className="wins">
+        {index === 0 ? "🏆 " : ""}
+        {user.wins} wins
+      </span>
+    </div>
+  ))}
 </LeaderboardContent>
 
       </Modal>
