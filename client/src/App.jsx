@@ -15,6 +15,27 @@ import Test from "./Pages/Test";
 import Header from "./Components/Header";
 import { useAuth } from "./Auth/AuthContext";
 import ProfilePage from "./Pages/ProfilePage";
+import { createGlobalStyle } from "styled-components";
+
+const GlobalModalStyle = createGlobalStyle`
+  .ant-modal-content {
+    background-color: #f9f4e8 !important;
+    border-radius: 12px;
+  }
+
+  .ant-modal-header {
+    background-color: #f9f4e8 !important;
+    border-bottom: none;
+  }
+
+  .ant-modal-body {
+    background-color: #fffbe6 !important;
+    padding: 24px;
+    border-radius: 0 0 12px 12px;
+  }
+`;
+
+
 function App() {
   const ProtectedRoute = ({ children }) => {
     const { currentUser } = useAuth();
@@ -52,6 +73,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <GlobalModalStyle />
       <RouterProvider router={router} />
     </AuthProvider>
   );

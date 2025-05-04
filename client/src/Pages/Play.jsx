@@ -16,10 +16,11 @@ import { useLocation } from "react-router-dom";
 import socket from "../Firebase/socket";
 import UserWaitingComponent from "../Components/UserWaitingComponent";
 import MenuSettings from "../Components/MenuSettings";
+import HowToModal from "../Components/HowTo";
 
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
-  background-image: url(Assets/PaperBackground.jpg);
+  background-image: url('/Assets/PaperBackground.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -234,6 +235,7 @@ function Play() {
           isCurrentTurn={currentPlayer.email === currentUser.email}
         />
       </CurrentUserContainer>
+      <HowToModal />
     </AppContainer>
   );
 }

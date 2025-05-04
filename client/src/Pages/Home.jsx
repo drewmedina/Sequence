@@ -5,6 +5,8 @@ import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import "../Styling/Home.css";
+import HowToModal from "../Components/HowTo";
+
 
 
 function Home() {
@@ -137,6 +139,7 @@ function Home() {
           </div>
         </div>
       </div>
+      <HowToModal />
     </div>
   );
 }
