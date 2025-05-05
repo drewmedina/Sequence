@@ -9,7 +9,7 @@ import styled from "styled-components";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../Firebase/firebase";
 import { useEffect } from "react";
-
+import ProfileContent from "./ProfileContent";
 
 
 
@@ -59,11 +59,29 @@ const LeaderboardContent = styled.div`
   }
 `;
 
+const ProfileContentWrapper = styled.div`
+  font-family: 'Cinzel', serif;
+  background-color: #fffbe6;
+  padding: 16px;
+  border-radius: 8px;
+  color: #4e3b31;
+  border: 1px solid #d8c3a5; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  max-height: 70vh;
+  overflow-y: auto;
+
+  p {
+    margin: 8px 0;
+  }
+`;
+
+
 function Header() {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,7 +125,8 @@ function Header() {
     {
       key: "profile",
       label: "Profile",
-      onClick: () => navigate("/profile"),
+      //onClick: () => navigate("/profile"),
+      onClick: () => setIsProfileVisible(true),
     },
     {
       key: "leaderboard",
@@ -212,6 +231,18 @@ function Header() {
 </LeaderboardContent>
 
       </Modal>
+
+    <Modal
+      title={<span style={{ fontFamily: "'Cinzel', serif", color: "#4e3b31", fontWeight: "bold", fontSize: "20px" }}>Profile</span>}
+      open={isProfileVisible}
+      onCancel={() => setIsProfileVisible(false)}
+      footer={null}
+      width={500}
+    >
+      <ProfileContentWrapper>
+        <ProfileContent onClose={() => setIsProfileVisible(false)} />
+      </ProfileContentWrapper>
+    </Modal>
 
       
     </header>

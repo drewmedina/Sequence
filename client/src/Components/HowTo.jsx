@@ -27,6 +27,8 @@ const ModalBody = styled.div`
   color: #4e3b31;
   border: 1px solid #d8c3a5;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  max-height: 70vh;
+  overflow-y: auto;
 
   p {
     margin: 8px 0;
