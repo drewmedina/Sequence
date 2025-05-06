@@ -189,13 +189,14 @@ function Play() {
               marginRight: "10px",
             }}
           >
-            {initialGameState.players.map((player) => (
-              <UserWaitingComponent
-                key={player.email}
-                user={player}
-                isCurrentTurn={currentPlayer.email === player.email}
-              />
-            ))}
+            {initialGameState &&
+              initialGameState.players.map((player) => (
+                <UserWaitingComponent
+                  key={player.email}
+                  user={player}
+                  isCurrentTurn={currentPlayer.email === player.email}
+                />
+              ))}
           </div>
 
           <BoardContainer>
@@ -215,21 +216,22 @@ function Play() {
 
         <div style={{ padding: "2%", marginBottom: "2%" }}>
           <CardsRow>
-            {cards.map((card, idx) => (
-              <HoverCard
-                key={idx}
-                onMouseEnter={() => setHoveredCard(card)}
-                onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => setSelectedCard(card)}
-                style={{ cursor: "pointer" }}
-              >
-                <Card
-                  rank={card.rank}
-                  suit={card.suit}
-                  highlighted={selectedCard === card}
-                />
-              </HoverCard>
-            ))}
+            {cards &&
+              cards.map((card, idx) => (
+                <HoverCard
+                  key={idx}
+                  onMouseEnter={() => setHoveredCard(card)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  onClick={() => setSelectedCard(card)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Card
+                    rank={card.rank}
+                    suit={card.suit}
+                    highlighted={selectedCard === card}
+                  />
+                </HoverCard>
+              ))}
           </CardsRow>
         </div>
       </AppContainer>
