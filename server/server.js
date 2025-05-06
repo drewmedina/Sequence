@@ -10,9 +10,14 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  "https://sequence-client.onrender.com",
+  "https://sequence.baby",
+];
+
 app.use(
   cors({
-    origin: "https://sequence-client.onrender.com", // Replace with your frontend URL
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   })
 );
@@ -23,7 +28,7 @@ app.use(
  */
 const io = new Server(server, {
   cors: {
-    origin: "https://sequence-client.onrender.com",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
