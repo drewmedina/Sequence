@@ -1,9 +1,12 @@
 import React from "react";
 import Avatar from "antd/es/avatar/Avatar";
-//import { useAuth } from "../Auth/AuthContext";
 import { UserOutlined } from "@ant-design/icons";
 import styled from "styled-components";
-
+import { useAuth } from "../Auth/AuthContext";
+const YouLabel = styled.span`
+  font-size: 0.75em;
+  opacity: 0.8;
+`;
 const StyledCardBack = styled.div`
   color: black;
   font-size: 4rem; /* Adjusted emoji size */
@@ -33,6 +36,8 @@ const Wrapper = styled.div`
   transition: all 0.3s ease;
 `;
 function UserWaitingComponent({ user, isCurrentTurn }) {
+  const { currentUser } = useAuth();
+  const isYou = currentUser?.email === user.email;
   return (
     <Wrapper isActive={isCurrentTurn}>
       <div
@@ -58,10 +63,14 @@ function UserWaitingComponent({ user, isCurrentTurn }) {
           }}
         >
           <Avatar
-            icon={<UserOutlined />}
-            style={{ backgroundColor: "#87d068", cursor: "pointer" }}
+            src={user.avatar} /* use src for image URLs */
+            icon={!user.avatar && <UserOutlined />}
           />
-          {<p>{user.username}</p>}
+          {
+            <span>
+              {user.username} {isYou && "(you)"}
+            </span>
+          }
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
           {[...Array(7)].map((_, index) => (

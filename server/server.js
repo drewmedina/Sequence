@@ -1,13 +1,13 @@
-const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const cors = require("cors");
-const { GameState } = require("./GameState.js");
-const { error } = require("console");
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+import { GameState } from "./GameState.js";
+import { doc, updateDoc, increment } from "firebase/firestore";
+import { db } from "./firebaseAdmin.js";
+import admin from "firebase-admin";
 const PORT = process.env.PORT || 3001;
-
 const app = express();
-
 const server = http.createServer(app);
 
 app.use(
@@ -26,6 +26,36 @@ const io = new Server(server, {
     origin: "https://sequence-client.onrender.com",
     methods: ["GET", "POST"],
   },
+});
+
+// app.use(
+//   cors({
+//     origin: "http://localhost:5173", // Replace with your frontend URL
+//     methods: ["GET", "POST"],
+//   })
+// );
+
+app.use((err, req, res, next) => {
+  console.error("Express error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+/**
+ * Initializes a WebSocket server using Socket.io.
+ * @type {Server}
+ */
+// const io = new Server(server, {
+//   cors: {
+//     origin: "http://localhost:5173",
+//     methods: ["GET", "POST"],
+//   },
+// });
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
+process.on("unhandledRejection", (reason) => {
+  console.error("Unhandled Rejection:", reason);
 });
 
 /**
@@ -148,19 +178,36 @@ io.on("connection", (socket) => {
       io.to(gameCode).emit("game-starting", gameLobbies[gameCode]);
     }
   });
-  socket.on("play-turn", (gameCode, username, row, col, joker) => {
+  socket.on("play-turn", async (gameCode, username, row, col, joker) => {
     if (gameLobbies[gameCode] && gameLobbies[gameCode].gameStarted) {
       try {
         console.log("attempting to play", row, col, joker);
         gameLobbies[gameCode].playCard(username, row, col, joker);
         console.log("winner?", gameLobbies[gameCode].winner);
+        let winner = gameLobbies[gameCode].winner;
+        if (winner) {
+          try {
+            // Build an Admin DocumentReference:
+            const winnerRef = db.collection("users").doc(winner.uid);
+            await winnerRef.update({
+              wins: admin.firestore.FieldValue.increment(1),
+            });
+            // And for each loser:
+            for (const player of gameLobbies[gameCode].players) {
+              if (player.uid === winner.uid) continue;
+              const loserRef = db.collection("users").doc(player.uid);
+              await loserRef.update({
+                losses: admin.firestore.FieldValue.increment(1),
+              });
+            }
+          } catch (err) {
+            console.error("Error updating win/loss:", err);
+          }
+        }
         io.to(gameCode).emit("game-update", gameLobbies[gameCode]);
       } catch (e) {
         console.log("fail", e);
-        io.to(gameCode).emit(
-          "game-error",
-          e.message || "An unknown error occurred."
-        );
+        socket.emit("game-error", e.message || "An unknown error occurred.");
       }
     }
   });

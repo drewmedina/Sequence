@@ -17,27 +17,42 @@ import socket from "../Firebase/socket";
 import UserWaitingComponent from "../Components/UserWaitingComponent";
 import MenuSettings from "../Components/MenuSettings";
 import HowToModal from "../Components/HowTo";
-import { auth, db } from "../Firebase/firebase";
-import { doc, setDoc, getDoc, increment, updateDoc } from "firebase/firestore";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Modal } from "antd";
+import { useNavigate } from "react-router-dom";
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
   background-image: url("/Assets/PaperBackground.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  height: 100vh;
+
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 
-const CardContainer = styled.div`
+  justify-content: space-evenly;
+  align-items: center;
+
+  padding-top: 2.5rem;
+  padding-bottom: 2rem;
+`;
+const CardsRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 0px;
-  margin-bottom: 50px;
+  gap: 1px;
+  padding-bottom: 2rem;
+`;
+
+const HoverCard = styled.div`
+  transform: scale(0.9);
+  transition: transform 0.2s, filter 0.2s;
+  &:hover {
+    transform: scale(1) translateY(-6px);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+    z-index: 5;
+  }
 `;
 
 const BoardContainer = styled.div`
@@ -46,7 +61,6 @@ const BoardContainer = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
-  min-height: 600px;
 `;
 
 const StyledBoardImage = styled.div`
@@ -69,27 +83,6 @@ const StyledGameBoard = styled.div`
   align-items: center;
 `;
 
-const HoverCard = styled.div`
-  transition: transform 0.3s;
-  &:hover {
-    transform: translateY(-10px); /* Makes the card lift slightly on hover */
-  }
-`;
-
-const ButtonContainer = styled.div`
-  height: 40px;
-  margin-top: 10px;
-  margin-bottom: -80px;
-  z-index: 3; /* z index is 3 because otherwise the buttons can't be clicked, the board covers it.*/
-`;
-
-const CurrentUserContainer = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-`;
-
 function Play() {
   const location = useLocation();
   const initialGameState = location.state;
@@ -98,6 +91,8 @@ function Play() {
   const [gameCode, setGameCode] = useState(urlGameCode || "");
   const [hoveredCard, setHoveredCard] = useState(null);
   const [selectedHandCard, setSelectedHandCard] = useState(null);
+  const navigate = useNavigate();
+  const [isWinnerModalVisible, setWinnerModalVisible] = useState(false);
   useEffect(() => {
     socket.on("game-update", (gameState) => {
       console.log("Received game update");
@@ -107,16 +102,19 @@ function Play() {
       setWinner(gameState.winner);
     });
     socket.on("game-error", (error) => {
+      let msg;
       if (typeof error === "string") {
-        alert(error);
+        msg = error;
       } else if (error instanceof Error) {
-        alert(error.message);
+        msg = error.message;
       } else {
-        alert(JSON.stringify(error));
+        msg = JSON.stringify(error);
       }
+      toast.error(msg);
     });
     return () => {
       socket.off("game-update");
+      socket.off("game-error");
     };
   }, [gameCode]);
   const [hand, setHand] = useState(initialGameState.deck);
@@ -151,122 +149,92 @@ function Play() {
   }, [selectedCard]);
   useEffect(() => {
     if (winner) {
-      const updateStats = async () => {
-        try {
-          // 1) Bump the winner’s wins
-          const winnerRef = doc(db, "users", winner.uid);
-          await updateDoc(winnerRef, {
-            wins: increment(1),
-          });
-
-          // 2) Bump each loser’s losses
-          for (const player of initialGameState.players) {
-            if (player.uid === winner.uid) continue;
-            const loserRef = doc(db, "users", player.uid);
-            await updateDoc(loserRef, {
-              losses: increment(1),
-            });
-          }
-        } catch (err) {
-          console.error("Error updating win/loss:", err);
-        }
-      };
-
-      updateStats();
+      setWinnerModalVisible(true);
     }
   }, [winner]);
   return (
-    <AppContainer>
-      <h1 style={{ width: "100%", height: "10px" }}>
-        {winner ? winner.username : ""}
-      </h1>
-      <div
-        style={{
-          height: "100%",
-          width: "98%",
-          display: "flex",
-          direction: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
+    <>
+      <ToastContainer position="top-right" autoClose={5000} />
+      <Modal
+        title="Game Over"
+        open={isWinnerModalVisible}
+        getContainer={() => document.body}
+        onOk={() => navigate("/")}
+        onCancel={() => navigate("/")}
+        okText="Back to Home"
+        cancelButtonProps={{ style: { display: "none" } }}
+        centered
+        style={{ top: 20 }}
       >
+        <p style={{ textAlign: "center", margin: 0, fontSize: 18 }}>
+          {winner?.username} has won the game!
+        </p>
+      </Modal>
+      <AppContainer>
+        <div style={{ height: "2%" }} />
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
+            width: "98%",
+            height: "100%",
             alignItems: "center",
-            marginRight: "10px",
+            justifyContent: "space-between",
           }}
         >
-          {initialGameState.players.map((player) => (
-            <UserWaitingComponent
-              key={player.email}
-              user={player}
-              isCurrentTurn={currentPlayer.email === player.email}
-            />
-          ))}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginRight: "10px",
+            }}
+          >
+            {initialGameState.players.map((player) => (
+              <UserWaitingComponent
+                key={player.email}
+                user={player}
+                isCurrentTurn={currentPlayer.email === player.email}
+              />
+            ))}
+          </div>
+
+          <BoardContainer>
+            <StyledBoardImage>
+              <BoardImage />
+            </StyledBoardImage>
+            <StyledGameBoard>
+              <DefaultGameBoard
+                hoveredCard={hoveredCard}
+                boardData={board}
+                setSelectedCard={setSelectedCard}
+                selectedHandCard={selectedHandCard}
+              />
+            </StyledGameBoard>
+          </BoardContainer>
         </div>
 
-        <BoardContainer>
-          <StyledBoardImage>
-            <BoardImage />
-          </StyledBoardImage>
-          <StyledGameBoard>
-            <DefaultGameBoard
-              hoveredCard={hoveredCard}
-              boardData={board}
-              setSelectedCard={setSelectedCard}
-              selectedHandCard={selectedHandCard}
-            />
-          </StyledGameBoard>
-        </BoardContainer>
-      </div>
-
-      <div style={{ padding: "2%", marginBottom: "2%" }}>
-        <CardContainer>
-          {cards.map((card, index) => {
-            const isSelected = selectedHandCard === card;
-
-            return (
+        <div style={{ padding: "2%", marginBottom: "2%" }}>
+          <CardsRow>
+            {cards.map((card, idx) => (
               <HoverCard
-                key={index}
-                // lift it permanently when selected
-                style={{
-                  transform: isSelected ? "translateY(-10px)" : undefined,
-                }}
+                key={idx}
+                onMouseEnter={() => setHoveredCard(card)}
+                onMouseLeave={() => setHoveredCard(null)}
+                onClick={() => setSelectedCard(card)}
+                style={{ cursor: "pointer" }}
               >
-                <div
-                  onMouseEnter={() => setHoveredCard(card)}
-                  onMouseLeave={() => {
-                    // if it's selected, keep hovered; otherwise clear
-                    if (isSelected) {
-                      setHoveredCard(card);
-                    } else {
-                      setHoveredCard(null);
-                    }
-                  }}
-                  onClick={() => {
-                    // select + keep highlight
-                    setSelectedHandCard(card);
-                    setHoveredCard(card);
-                  }}
-                  style={{
-                    cursor: "pointer",
-                  }}
-                >
-                  <Card
-                    rank={card.rank}
-                    suit={card.suit}
-                    highlighted={isSelected}
-                  />
-                </div>
+                <Card
+                  rank={card.rank}
+                  suit={card.suit}
+                  highlighted={selectedCard === card}
+                />
               </HoverCard>
-            );
-          })}
-        </CardContainer>
-      </div>
+            ))}
+          </CardsRow>
+        </div>
+      </AppContainer>
       <HowToModal />
-    </AppContainer>
+    </>
   );
 }
 

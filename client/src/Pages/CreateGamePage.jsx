@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import UserWaitingComponent from "../Components/UserWaitingComponent";
+import CreateGameUserComponent from "../Components/CreateGameUserComponent";
 import "../Styling/CreateGamePage.css";
 import { Slider, Row, Col, InputNumber, Button } from "antd";
 import { NumberOutlined, FieldTimeOutlined } from "@ant-design/icons";
@@ -92,7 +92,7 @@ function CreateGamePage() {
         <div className="current-players-box">
           {lobbyUsers.length > 0 ? (
             lobbyUsers.map((user, index) => (
-              <UserWaitingComponent user={user} key={index} />
+              <CreateGameUserComponent user={user} key={index} />
             ))
           ) : (
             <p>No players in lobby</p>
@@ -127,7 +127,8 @@ function CreateGamePage() {
                         width: 48,
                         height: 40,
                         fontWeight: "bold",
-                        backgroundColor: sequencesNeeded === val ? "#5f9341" : "#fff8dc",
+                        backgroundColor:
+                          sequencesNeeded === val ? "#5f9341" : "#fff8dc",
                         borderColor: "#b08c5a",
                         color: sequencesNeeded === val ? "white" : "#5a3e2b",
                       }}
@@ -135,26 +136,22 @@ function CreateGamePage() {
                       {val}
                     </Button>
                   ))}
-                  </div>
+                </div>
 
-
-                 {/* <InputNumber
+                {/* <InputNumber
                   min={1}
                   max={2}
                   style={{ margin: "0 16px" }}
                   value={sequencesNeeded}
                   onChange={handleSequenceChange}
                 /> */}
-                
-
-
               </div>
               <div className="time-per-move">
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.5rem", 
+                    gap: "0.5rem",
                     width: "fit-content",
                   }}
                 >
@@ -189,14 +186,10 @@ function CreateGamePage() {
                 Start Game!
               </Button>
 
-
-              <Button
-                className="leave-button"
-                onClick={handleLeaveGame}
-              >
+              <Button className="leave-button" onClick={handleLeaveGame}>
                 Leave the Game
               </Button>
-              
+
               {/* <Button onClick={handleLeaveGame}>Leave the Game</Button> */}
             </div>
           </div>

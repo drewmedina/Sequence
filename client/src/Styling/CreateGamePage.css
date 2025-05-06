@@ -5,7 +5,7 @@
   background-size: cover;
   min-height: 100vh;
   padding: 2rem;
-  font-family: 'Cinzel', serif; 
+  font-family: "Cinzel", serif;
   color: #f7fdad;
   display: flex;
   flex-direction: column;
@@ -43,9 +43,10 @@
   background: rgba(255, 255, 255, 0.75);
   padding: 2rem;
   border-radius: 10px;
-  width: 300px; 
+  width: 300px;
   min-height: 120px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -62,7 +63,6 @@
   width: 100%;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
-
 
 .settings-box h2 {
   color: #5e3b1e;
@@ -91,7 +91,7 @@
   transition: all 0.2s ease-in-out;
   border-radius: 8px;
   padding: 0.5rem 1.5rem;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
 }
 
 .leave-button:hover {
@@ -109,7 +109,7 @@
 .ant-btn {
   border-radius: 8px;
   font-weight: bold;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   padding: 0.5rem 1.5rem;
 }
 
@@ -120,5 +120,5 @@
 
 .ant-btn:hover {
   background-color: #4e7a37;
-  border-color: #000000!important;
+  border-color: #000000 !important;
 }

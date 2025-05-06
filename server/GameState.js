@@ -37,18 +37,7 @@ export class GameState {
     ];
     this.discardPile = [];
     this.deck = this.initializeDeck();
-    this.hands = {
-      //delete when submitting
-      [players[0].email]: [
-        { rank: "BJoker1", suit: "blackJokers" },
-        { rank: "RJoker1", suit: "redJokers" },
-        { rank: "Seven", suit: "clubs" },
-        { rank: "Six", suit: "clubs" },
-        { rank: "Five", suit: "clubs" },
-        { rank: "Four", suit: "clubs" },
-        { rank: "Three", suit: "clubs" },
-      ],
-    };
+    this.hands = {};
     this.currentTurnIndex = 0;
     this.gameStarted = false;
     this.colors = [

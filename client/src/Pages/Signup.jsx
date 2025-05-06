@@ -3,7 +3,8 @@ import { useAuth } from "../Auth/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Box, Stack } from "@mui/material";
 import { Form, Input, Button } from "antd";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +19,7 @@ function Signup() {
       await signup(email, username, password, confirmpassword);
       navigate("/");
     } catch (e) {
-      alert(e.message);
+      toast.error(e.message);
     }
   };
   const loginButton = async (e) => {
@@ -26,148 +27,156 @@ function Signup() {
     navigate("/login");
   };
   return (
-    <Box
-      className="Background"
-      sx={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#936737",
-      }}
-    >
-      <Stack
-        direction="row"
+    <>
+      <ToastContainer position="top-right" autoClose={5000} />
+      <Box
+        className="Background"
         sx={{
-          width: "80%",
-          height: "80%",
+          width: "100vw",
+          height: "100vh",
           display: "flex",
-          boxShadow: 3,
-          borderRadius: 2,
-          overflow: "hidden",
-          marginBottom: "4%",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#936737",
         }}
       >
-        <Box
+        <Stack
+          direction="row"
           sx={{
-            flex: 1,
+            width: "80%",
+            height: "80%",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#FFFFFF",
-            padding: 3,
-          }}
-        >
-          <Stack
-            direction="column"
-            sx={{
-              width: "70%",
-              justifyContent: "center",
-            }}
-          >
-            <h1 style={{ color: "#000000", textAlign: "center" }}>
-              {" "}
-              Create An Account!
-            </h1>
-            <Form name="basic" layout="vertical">
-              <Form.Item
-                label="Email Address"
-                name="email"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Email Address!",
-                  },
-                ]}
-              >
-                <Input onChange={(e) => setEmail(e.target.value)} />
-              </Form.Item>
-
-              <Form.Item
-                label="Username"
-                name="username"
-                rules={[
-                  { required: true, message: "Please input a username!" },
-                ]}
-              >
-                <Input onChange={(e) => setUsername(e.target.value)} />
-              </Form.Item>
-
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Please input your Password!" },
-                ]}
-              >
-                <Input.Password onChange={(e) => setPassword(e.target.value)} />
-              </Form.Item>
-
-              <Form.Item
-                label="Confirm Password"
-                name="confirm-password"
-                rules={[
-                  { required: true, message: "Please confirm your Password!" },
-                ]}
-              >
-                <Input.Password
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </Form.Item>
-
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  onClick={onSubmit}
-                  style={{ width: "100%" }}
-                >
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
-            <p style={{ color: "#000000", textAlign: "center" }}>
-              Already have an account?{" "}
-              <Button onClick={loginButton}>
-                <b>Log In</b>
-              </Button>
-            </p>
-          </Stack>
-        </Box>
-        <Box
-          sx={{
-            flex: 1,
-            backgroundImage: "url(Assets/CardBackground.png)",
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "cover",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            boxShadow: 3,
+            borderRadius: 2,
+            overflow: "hidden",
+            marginBottom: "4%",
           }}
         >
           <Box
             sx={{
+              flex: 1,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
-              width: "80%",
+              justifyContent: "center",
+              backgroundColor: "#FFFFFF",
+              padding: 3,
             }}
           >
-            <img
-              src="Assets/Card.png"
-              style={{ width: "70%", height: "auto" }}
-              alt="Card"
-            />
-            <img
-              src="Assets/SequenceLogo.png"
-              style={{ width: "60%", height: "auto" }}
-              alt="Logo"
-            />
+            <Stack
+              direction="column"
+              sx={{
+                width: "70%",
+                justifyContent: "center",
+              }}
+            >
+              <h1 style={{ color: "#000000", textAlign: "center" }}>
+                {" "}
+                Create An Account!
+              </h1>
+              <Form name="basic" layout="vertical">
+                <Form.Item
+                  label="Email Address"
+                  name="email"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Email Address!",
+                    },
+                  ]}
+                >
+                  <Input onChange={(e) => setEmail(e.target.value)} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Username"
+                  name="username"
+                  rules={[
+                    { required: true, message: "Please input a username!" },
+                  ]}
+                >
+                  <Input onChange={(e) => setUsername(e.target.value)} />
+                </Form.Item>
+
+                <Form.Item
+                  label="Password"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Please input your Password!" },
+                  ]}
+                >
+                  <Input.Password
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Confirm Password"
+                  name="confirm-password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please confirm your Password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </Form.Item>
+
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    onClick={onSubmit}
+                    style={{ width: "100%" }}
+                  >
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+              <p style={{ color: "#000000", textAlign: "center" }}>
+                Already have an account?{" "}
+                <Button onClick={loginButton}>
+                  <b>Log In</b>
+                </Button>
+              </p>
+            </Stack>
           </Box>
-        </Box>
-      </Stack>
-    </Box>
+          <Box
+            sx={{
+              flex: 1,
+              backgroundImage: "url(Assets/CardBackground.png)",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "80%",
+              }}
+            >
+              <img
+                src="Assets/Card.png"
+                style={{ width: "70%", height: "auto" }}
+                alt="Card"
+              />
+              <img
+                src="Assets/SequenceLogo.png"
+                style={{ width: "60%", height: "auto" }}
+                alt="Logo"
+              />
+            </Box>
+          </Box>
+        </Stack>
+      </Box>
+    </>
   );
 }
 
