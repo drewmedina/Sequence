@@ -12,7 +12,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "https://sequence-phi.vercel.app", // Replace with your frontend URL
+    origin: "https://sequence-client.onrender.com/", // Replace with your frontend URL
     methods: ["GET", "POST"],
   })
 );
@@ -23,7 +23,7 @@ app.use(
  */
 const io = new Server(server, {
   cors: {
-    origin: "https://sequence-phi.vercel.app",
+    origin: "https://sequence-client.onrender.com/",
     methods: ["GET", "POST"],
   },
 });
