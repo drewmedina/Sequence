@@ -225,11 +225,31 @@ function Play() {
                   onClick={() => setSelectedCard(card)}
                   style={{ cursor: "pointer" }}
                 >
-                  <Card
-                    rank={card.rank}
-                    suit={card.suit}
-                    highlighted={selectedCard === card}
-                  />
+                  <div
+                    onMouseEnter={() => setHoveredCard(card)}
+                    onMouseLeave={() => {
+                      // if it's selected, keep hovered; otherwise clear
+                      if (isSelected) {
+                        setHoveredCard(card);
+                      } else {
+                        setHoveredCard(null);
+                      }
+                    }}
+                    onClick={() => {
+                      // select + keep highlight
+                      setSelectedHandCard(card);
+                      setHoveredCard(card);
+                    }}
+                    style={{
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Card
+                      rank={card.rank}
+                      suit={card.suit}
+                      highlighted={isSelected}
+                    />
+                  </div>
                 </HoverCard>
               ))}
           </CardsRow>
