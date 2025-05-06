@@ -14,7 +14,6 @@ import Play from "./Pages/Play";
 import Test from "./Pages/Test";
 import Header from "./Components/Header";
 import { useAuth } from "./Auth/AuthContext";
-import ProfilePage from "./Pages/ProfilePage";
 import { createGlobalStyle } from "styled-components";
 
 const GlobalModalStyle = createGlobalStyle`
@@ -34,7 +33,6 @@ const GlobalModalStyle = createGlobalStyle`
     border-radius: 0 0 12px 12px;
   }
 `;
-
 
 function App() {
   const ProtectedRoute = ({ children }) => {
@@ -58,7 +56,6 @@ function App() {
         { path: "createGame/:gameCode", element: <CreateGamePage /> },
         { path: "play/:gameCode", element: <Play /> },
         { path: "test", element: <Test /> },
-        { path: "profile", element: <ProfilePage /> },
       ],
     },
     {

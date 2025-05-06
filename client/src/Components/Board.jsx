@@ -43,7 +43,8 @@ function DefaultGameBoard({
   const { currentUser } = useAuth();
   const hoveredCode =
     hoveredCard &&
-    (rankInverse[hoveredCard.rank] ?? "J") + (suitInverse[hoveredCard.suit] ?? "1");
+    (rankInverse[hoveredCard.rank] ?? "J") +
+      (suitInverse[hoveredCard.suit] ?? "1");
   const selectedCode =
     selectedHandCard &&
     (rankInverse[selectedHandCard.rank] ?? "J") +
@@ -66,7 +67,7 @@ function DefaultGameBoard({
           const [cardValue, token] = value.split("#");
           const rank = cardValue.slice(0, -1); // Extract number/face (e.g., "10", "K")
           const suitSymbol = cardValue.slice(-1); // Extract suit symbol (♥, ♦, ♠, ♣)
-          const isHighlighted = hoveredCode === value;
+          const isHighlighted = hoveredCode === value || selectedCode === value;
           const isSelectable = selectedCode === value || selectedCode == "J1";
           const parts = value.split("#");
           const tokenPath = parts.length > 1 ? parts[1] : null;
