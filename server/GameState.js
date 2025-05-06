@@ -52,9 +52,9 @@ export class GameState {
     this.currentTurnIndex = 0;
     this.gameStarted = false;
     this.colors = [
-      "#../../../public/Assets/redToken.png",
-      "#../../../public/Assets/blueToken.png",
-      "#../../../public/Assets/greenToken.png",
+      "#../../../Assets/redToken.png",
+      "#../../../Assets/blueToken.png",
+      "#../../../Assets/greenToken.png",
     ];
     this.winner = null;
   }
