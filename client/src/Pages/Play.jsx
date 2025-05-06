@@ -22,6 +22,12 @@ import "react-toastify/dist/ReactToastify.css";
 import { Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 //a div styled as pink and also centers everything in it when used
+const CardContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 0px;
+  margin-bottom: 50px;
+`;
 const AppContainer = styled.div`
   background-image: url("/Assets/PaperBackground.jpg");
   background-size: cover;
@@ -215,15 +221,17 @@ function Play() {
         </div>
 
         <div style={{ padding: "2%", marginBottom: "2%" }}>
-          <CardsRow>
-            {cards &&
-              cards.map((card, idx) => (
+          <CardContainer>
+            {cards.map((card, index) => {
+              const isSelected = selectedHandCard === card;
+
+              return (
                 <HoverCard
-                  key={idx}
-                  onMouseEnter={() => setHoveredCard(card)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                  onClick={() => setSelectedCard(card)}
-                  style={{ cursor: "pointer" }}
+                  key={index}
+                  // lift it permanently when selected
+                  style={{
+                    transform: isSelected ? "translateY(-10px)" : undefined,
+                  }}
                 >
                   <div
                     onMouseEnter={() => setHoveredCard(card)}
@@ -251,8 +259,9 @@ function Play() {
                     />
                   </div>
                 </HoverCard>
-              ))}
-          </CardsRow>
+              );
+            })}
+          </CardContainer>
         </div>
       </AppContainer>
       <HowToModal />
