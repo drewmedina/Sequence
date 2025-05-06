@@ -7,7 +7,7 @@ import { useAuth } from "../Auth/AuthContext";
 
 // outer box around each player
 const Wrapper = styled.div`
-  width: 140px; /* fixed width prevents squish */
+  width: auto; /* fixed width prevents squish */
   padding: 10px;
   margin: 5px;
   border-radius: 8px;
