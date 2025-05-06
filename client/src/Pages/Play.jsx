@@ -17,10 +17,12 @@ import socket from "../Firebase/socket";
 import UserWaitingComponent from "../Components/UserWaitingComponent";
 import MenuSettings from "../Components/MenuSettings";
 import HowToModal from "../Components/HowTo";
+import { auth, db } from "../Firebase/firebase";
+import { doc, setDoc, getDoc, increment, updateDoc } from "firebase/firestore";
 
 //a div styled as pink and also centers everything in it when used
 const AppContainer = styled.div`
-  background-image: url('/Assets/PaperBackground.jpg');
+  background-image: url("/Assets/PaperBackground.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -51,16 +53,16 @@ const StyledBoardImage = styled.div`
   position: absolute;
   /* top: 0; */
   /* left: 0; */
-  width: 60%;
-  height: 65%;
+  width: 85%;
+  height: 75%;
   z-index: 1;
   pointer-events: none;
 `;
 
 const StyledGameBoard = styled.div`
   position: absolute;
-  width: 60%;
-  height: 65%;
+  width: 85%;
+  height: 75%;
   z-index: 2;
   display: flex;
   justify-content: center;
@@ -94,6 +96,8 @@ function Play() {
   const { currentUser } = useAuth();
   const { gameCode: urlGameCode } = useParams();
   const [gameCode, setGameCode] = useState(urlGameCode || "");
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [selectedHandCard, setSelectedHandCard] = useState(null);
   useEffect(() => {
     socket.on("game-update", (gameState) => {
       console.log("Received game update");
@@ -134,19 +138,41 @@ function Play() {
 
   useEffect(() => {
     if (selectedCard) {
-      console.log(selectedCard.row, selectedCard.col);
+      console.log("hi", selectedCard.row, selectedCard.col, selectedCard);
       socket.emit(
         "play-turn",
         gameCode,
         currentUser,
         selectedCard.row,
-        selectedCard.col
+        selectedCard.col,
+        selectedCard.joker
       );
     }
   }, [selectedCard]);
   useEffect(() => {
     if (winner) {
-      console.log("winner", winner.email);
+      const updateStats = async () => {
+        try {
+          // 1) Bump the winner’s wins
+          const winnerRef = doc(db, "users", winner.uid);
+          await updateDoc(winnerRef, {
+            wins: increment(1),
+          });
+
+          // 2) Bump each loser’s losses
+          for (const player of initialGameState.players) {
+            if (player.uid === winner.uid) continue;
+            const loserRef = doc(db, "users", player.uid);
+            await updateDoc(loserRef, {
+              losses: increment(1),
+            });
+          }
+        } catch (err) {
+          console.error("Error updating win/loss:", err);
+        }
+      };
+
+      updateStats();
     }
   }, [winner]);
   return (
@@ -169,18 +195,16 @@ function Play() {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            marginRight: "10px",
           }}
         >
-          {initialGameState.players
-            .filter((player) => player.email !== currentUser.email)
-            .slice(0, Math.ceil((initialGameState.players.length - 1) / 2)) // First half
-            .map((player, index) => (
-              <UserWaitingComponent
-                key={index}
-                user={player}
-                isCurrentTurn={currentPlayer.email === player.email}
-              />
-            ))}
+          {initialGameState.players.map((player) => (
+            <UserWaitingComponent
+              key={player.email}
+              user={player}
+              isCurrentTurn={currentPlayer.email === player.email}
+            />
+          ))}
         </div>
 
         <BoardContainer>
@@ -189,52 +213,58 @@ function Play() {
           </StyledBoardImage>
           <StyledGameBoard>
             <DefaultGameBoard
+              hoveredCard={hoveredCard}
               boardData={board}
               setSelectedCard={setSelectedCard}
+              selectedHandCard={selectedHandCard}
             />
           </StyledGameBoard>
         </BoardContainer>
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          {initialGameState.players
-            .filter((player) => player.email !== currentUser.email)
-            .slice(Math.ceil((initialGameState.players.length - 1) / 2)) // Second half
-            .map((player, index) => (
-              <UserWaitingComponent
-                key={index + 1000} // different key space from left column
-                user={player}
-                isCurrentTurn={currentPlayer.email === player.email}
-              />
-            ))}
-        </div>
       </div>
 
-      <div>
+      <div style={{ padding: "2%", marginBottom: "2%" }}>
         <CardContainer>
-          {cards.map((card, index) => (
-            <HoverCard key={index}>
-              <div
-                onClick={() => discardCard(index)}
-                style={{ cursor: "pointer" }}
+          {cards.map((card, index) => {
+            const isSelected = selectedHandCard === card;
+
+            return (
+              <HoverCard
+                key={index}
+                // lift it permanently when selected
+                style={{
+                  transform: isSelected ? "translateY(-10px)" : undefined,
+                }}
               >
-                <Card key={index} rank={card.rank} suit={card.suit} />
-              </div>
-            </HoverCard>
-          ))}
+                <div
+                  onMouseEnter={() => setHoveredCard(card)}
+                  onMouseLeave={() => {
+                    // if it's selected, keep hovered; otherwise clear
+                    if (isSelected) {
+                      setHoveredCard(card);
+                    } else {
+                      setHoveredCard(null);
+                    }
+                  }}
+                  onClick={() => {
+                    // select + keep highlight
+                    setSelectedHandCard(card);
+                    setHoveredCard(card);
+                  }}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <Card
+                    rank={card.rank}
+                    suit={card.suit}
+                    highlighted={isSelected}
+                  />
+                </div>
+              </HoverCard>
+            );
+          })}
         </CardContainer>
       </div>
-      <CurrentUserContainer>
-        <UserWaitingComponent
-          user={currentUser}
-          isCurrentTurn={currentPlayer.email === currentUser.email}
-        />
-      </CurrentUserContainer>
       <HowToModal />
     </AppContainer>
   );

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 const CardBox = styled.div`
+  position: relative;
   font-size: 8rem;
   line-height: 0.42;
   padding: 20px;
@@ -10,7 +11,7 @@ const CardBox = styled.div`
     suit === "hearts" || suit === "diamonds" || suit === "redJokers"
       ? "red"
       : "black"};
-  background-color: white;
+  background-color: ${({ highlight }) => (highlight ? "#FFF9C4" : "white")};
   width: 90px;
   height: 120px;
   border-radius: 10px;
@@ -105,24 +106,30 @@ const cardSymbols = {
   },
 };
 
-function Card({ rank, suit, token = null }) {
+function Card({ rank, suit, token = null, highlighted }) {
   if (!token) {
-    console.log("printing", suit, rank);
-    return <CardBox suit={suit}>{cardSymbols[suit][rank]}</CardBox>;
+    return (
+      <CardBox suit={suit} highlight={highlighted}>
+        {cardSymbols[suit][rank]}
+      </CardBox>
+    );
   } else {
     return (
-      <CardBox suit={suit}>
+      <CardBox suit={suit} highlight={highlighted}>
         {cardSymbols[suit][rank]}
-        <div
-          style={{
-            position: "absolute",
-            backgroundColor: token,
-            borderRadius: "50%",
-            height: "5%",
-            aspectRatio: "1",
-            zIndex: "2",
-          }}
-        ></div>
+        {token && (
+          <img
+            src={token}
+            alt="token"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "70%",
+              pointerEvents: "none",
+              zIndex: 2,
+            }}
+          />
+        )}
       </CardBox>
     );
   }

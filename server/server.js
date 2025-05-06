@@ -143,11 +143,11 @@ io.on("connection", (socket) => {
       io.to(gameCode).emit("game-starting", gameLobbies[gameCode]);
     }
   });
-  socket.on("play-turn", (gameCode, username, row, col) => {
+  socket.on("play-turn", (gameCode, username, row, col, joker) => {
     if (gameLobbies[gameCode] && gameLobbies[gameCode].gameStarted) {
       try {
-        console.log("attempting to play", row, col);
-        gameLobbies[gameCode].playCard(username, row, col);
+        console.log("attempting to play", row, col, joker);
+        gameLobbies[gameCode].playCard(username, row, col, joker);
         console.log("winner?", gameLobbies[gameCode].winner);
         io.to(gameCode).emit("game-update", gameLobbies[gameCode]);
       } catch (e) {

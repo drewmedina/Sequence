@@ -38,9 +38,10 @@ export class GameState {
     this.discardPile = [];
     this.deck = this.initializeDeck();
     this.hands = {
+      //delete when submitting
       [players[0].email]: [
-        { rank: "Two", suit: "clubs" },
-        { rank: "Eight", suit: "clubs" },
+        { rank: "BJoker1", suit: "blackJokers" },
+        { rank: "RJoker1", suit: "redJokers" },
         { rank: "Seven", suit: "clubs" },
         { rank: "Six", suit: "clubs" },
         { rank: "Five", suit: "clubs" },
@@ -50,7 +51,11 @@ export class GameState {
     };
     this.currentTurnIndex = 0;
     this.gameStarted = false;
-    this.colors = ["#000000", "#777777", "#F78FD1"];
+    this.colors = [
+      "#../../../public/Assets/redToken.png",
+      "#../../../public/Assets/blueToken.png",
+      "#../../../public/Assets/greenToken.png",
+    ];
     this.winner = null;
   }
 
@@ -107,7 +112,50 @@ export class GameState {
     return this.players[this.currentTurnIndex];
   }
 
-  playCard(player, row, col) {
+  playCard(player, row, col, joker) {
+    let hand = this.hands[player.email];
+    const blackIdx = hand.findIndex(
+      (c) => c.suit === "blackJokers" && c.rank.startsWith("BJoker")
+    );
+    if (blackIdx !== -1 && joker) {
+      const square = this.board[row][col];
+      const [cardCode, marker] = square.split("#");
+      if (!marker) {
+        throw new Error("No token to remove");
+      }
+      // strip the marker off
+      this.board[row][col] = cardCode;
+      // discard the joker
+      this.discardPile.push(hand.splice(blackIdx, 1)[0]);
+      this.drawCard(player);
+      this.advanceTurn();
+      return;
+    }
+
+    const redIdx = hand.findIndex(
+      (c) => c.suit === "redJokers" && c.rank.startsWith("RJoker")
+    );
+    if (redIdx !== -1 && joker) {
+      const square = this.board[row][col];
+      if (square.includes("#")) {
+        throw new Error("Square already occupied");
+      }
+      // place this player's token
+      const colorTag = this.colors[this.currentTurnIndex];
+      this.board[row][col] = square + colorTag;
+      // discard the joker
+      this.discardPile.push(hand.splice(redIdx, 1)[0]);
+      // check win
+      const winnerColor = this.checkForWin();
+      if (winnerColor) {
+        this.winner = this.players[this.colors.indexOf(winnerColor)];
+      } else {
+        this.drawCard(player);
+        this.advanceTurn();
+      }
+      return;
+    }
+
     const [rawRank, rawSuit] = this.board[row][col]
       .split("#")[0]
       .match(/^([A-Z0-9]+)([♠♥♦♣])$/)
@@ -125,7 +173,7 @@ export class GameState {
       throw new Error("Not this player's turn");
     }
 
-    const index = this.hands[player.email].findIndex(
+    const index = hand.findIndex(
       (c) => c.rank === card.rank && c.suit === card.suit
     );
     if (index === -1) throw new Error("Card not in hand");
@@ -176,7 +224,7 @@ export class GameState {
         const squareParts = this.board[i][j].split("#");
         const marker = squareParts[squareParts.length - 1];
 
-        if (marker.length !== 6) continue; // skip if no player color marker like "#000000"
+        if (marker.length < 1) continue; // skip if no player color marker like "#000000"
 
         for (const [dx, dy] of directions) {
           let count = 1;
