@@ -10,7 +10,6 @@ const app = express();
 
 const server = http.createServer(app);
 
-const cors = require("cors");
 app.use(
   cors({
     origin: "https://sequence-phi.vercel.app", // Replace with your frontend URL
