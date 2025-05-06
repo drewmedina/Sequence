@@ -222,45 +222,38 @@ function Play() {
 
         <div style={{ padding: "2%", marginBottom: "2%" }}>
           <CardContainer>
-            {cards.map((card, index) => {
-              const isSelected = selectedHandCard === card;
-
-              return (
-                <HoverCard
-                  key={index}
-                  // lift it permanently when selected
-                  style={{
-                    transform: isSelected ? "translateY(-10px)" : undefined,
-                  }}
-                >
-                  <div
-                    onMouseEnter={() => setHoveredCard(card)}
-                    onMouseLeave={() => {
-                      // if it's selected, keep hovered; otherwise clear
-                      if (isSelected) {
-                        setHoveredCard(card);
-                      } else {
-                        setHoveredCard(null);
-                      }
-                    }}
-                    onClick={() => {
-                      // select + keep highlight
-                      setSelectedHandCard(card);
+            {cards.map((card, index) => (
+              <HoverCard
+                key={index}
+                style={{
+                  transform:
+                    selectedHandCard === card ? "translateY(-10px)" : undefined,
+                }}
+              >
+                <div
+                  onMouseEnter={() => setHoveredCard(card)}
+                  onMouseLeave={() => {
+                    // keep hover if it’s the selected card
+                    if (selectedHandCard === card) {
                       setHoveredCard(card);
-                    }}
-                    style={{
-                      cursor: "pointer",
-                    }}
-                  >
-                    <Card
-                      rank={card.rank}
-                      suit={card.suit}
-                      highlighted={isSelected}
-                    />
-                  </div>
-                </HoverCard>
-              );
-            })}
+                    } else {
+                      setHoveredCard(null);
+                    }
+                  }}
+                  onClick={() => {
+                    setSelectedHandCard(card);
+                    setHoveredCard(card);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  <Card
+                    rank={card.rank}
+                    suit={card.suit}
+                    highlighted={selectedHandCard === card}
+                  />
+                </div>
+              </HoverCard>
+            ))}
           </CardContainer>
         </div>
       </AppContainer>
