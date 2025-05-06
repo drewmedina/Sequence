@@ -46,6 +46,7 @@ export class GameState {
       "#../../../Assets/greenToken.png",
     ];
     this.winner = null;
+    this.dealHand(players[0]);
   }
 
   initializeDeck() {
