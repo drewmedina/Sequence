@@ -195,7 +195,7 @@ export class GameState {
       this.players.push(player);
       this.dealHand(player);
     } else {
-      alert("Lobby Full");
+      throw new Error("Lobby Full");
     }
   }
   getPlayers() {
