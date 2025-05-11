@@ -13,6 +13,7 @@ const server = http.createServer(app);
 const allowedOrigins = [
   "https://sequence-client.onrender.com",
   "https://sequence.baby",
+  "http://localhost:5173",
 ];
 
 app.use(
@@ -33,13 +34,6 @@ const io = new Server(server, {
   },
 });
 
-// app.use(
-//   cors({
-//     origin: "http://localhost:5173", // Replace with your frontend URL
-//     methods: ["GET", "POST"],
-//   })
-// );
-
 app.use((err, req, res, next) => {
   console.error("Express error:", err);
   res.status(500).json({ error: "Internal server error" });
@@ -49,12 +43,6 @@ app.use((err, req, res, next) => {
  * Initializes a WebSocket server using Socket.io.
  * @type {Server}
  */
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST"],
-//   },
-// });
 
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
@@ -187,6 +175,9 @@ io.on("connection", (socket) => {
     if (gameLobbies[gameCode] && gameLobbies[gameCode].gameStarted) {
       try {
         console.log("attempting to play", row, col, joker);
+        if (!row || !col) {
+          return;
+        }
         gameLobbies[gameCode].playCard(username, row, col, joker);
         console.log("winner?", gameLobbies[gameCode].winner);
         let winner = gameLobbies[gameCode].winner;

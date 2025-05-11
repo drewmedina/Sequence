@@ -1,3 +1,4 @@
+// Home.jsx
 import React, { useEffect, useState } from "react";
 import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
@@ -7,26 +8,20 @@ import { useNavigate } from "react-router-dom";
 import "../Styling/Home.css";
 import HowToModal from "../Components/HowTo";
 
-
-
 function Home() {
   const { currentUser } = useAuth();
-  useEffect(() => {
-    console.log("Current user updated:", currentUser);
-  }, [currentUser]);
-  
   const [gameCode, setGameCode] = useState("");
   const [lobbyUsers, setLobbyUsers] = useState([]);
   const [error, setError] = useState("");
   const [isJoining, setIsJoining] = useState(false);
   const navigate = useNavigate();
 
+  // Log whenever currentUser changes (for debugging)
+  useEffect(() => {
+    console.log("Current user updated:", currentUser);
+  }, [currentUser]);
 
-  const handleCreateGameClick = (e) => {
-    console.log("press");
-    e.preventDefault();
-    createGame();
-  };
+  // Set up socket listeners on mount, and clean up on unmount
   useEffect(() => {
     console.log("Setting up socket listeners...");
 
@@ -48,7 +43,7 @@ function Home() {
     socket.on("game-created", (newGameCode) => {
       console.log(`Game created: ${newGameCode}`);
       setGameCode(newGameCode);
-      navigate(`/createGame/${newGameCode}`);
+      navigate(`/createGame/${newGameCode}`); // Navigate to lobby page
       setError("");
     });
 
@@ -59,8 +54,9 @@ function Home() {
       socket.off("lobby-error");
       socket.off("game-created");
     };
-  }, []);
+  }, [navigate]);
 
+  // Emit create-game event to server
   const createGame = () => {
     if (!currentUser || !currentUser.email) {
       setError("Error: User not logged in.");
@@ -71,12 +67,18 @@ function Home() {
     socket.emit("create-game", currentUser);
   };
 
-  // Called when "Join a Game" is clicked
-  const handleJoinClick = () => {
-    setIsJoining(true); // Show the input field instead of button
+  // Button click handler to start creating a game
+  const handleCreateGameClick = (e) => {
+    e.preventDefault();
+    createGame();
   };
 
-  // Called when user presses Enter after entering a game code
+  // Show the input field to enter a game code
+  const handleJoinClick = () => {
+    setIsJoining(true);
+  };
+
+  // Handle Enter key in join input to attempt joining lobby
   const handleJoinLobby = (e) => {
     if (e.key === "Enter") {
       if (!currentUser || !currentUser.email) {
@@ -94,21 +96,26 @@ function Home() {
   return (
     <div className="home-container">
       <div className="home-content">
+        {/* Animated logo */}
         <img src="/Assets/logo.gif" alt="Logo" className="logo" />
+
         <div className="lobby-container">
           <div className="avatar-container">
-          {currentUser && (
-            <Avatar
-              size={64}
-              src={currentUser.avatar}
-              icon={!currentUser.avatar && <UserOutlined />}
-              className="avatar"
-              alt="User avatar"
-            />
-          )}
+            {/* Display user avatar or default icon */}
+            {currentUser && (
+              <Avatar
+                size={64}
+                src={currentUser.avatar}
+                icon={!currentUser.avatar && <UserOutlined />}
+                className="avatar"
+                alt="User avatar"
+              />
+            )}
             <h2 className="username">{currentUser.username}</h2>
           </div>
+
           <div className="buttons-container">
+            {/* Create game button */}
             <button
               className="button create-button"
               onClick={handleCreateGameClick}
@@ -116,15 +123,11 @@ function Home() {
               Create a private game
             </button>
 
+            {/* Join game input or button */}
             {!isJoining ? (
-              <button
-                variant="outlined"
-                className="button join-button"
-                onClick={handleJoinClick}
-              >
+              <button className="button join-button" onClick={handleJoinClick}>
                 Join a game
               </button>
-              
             ) : (
               <input
                 type="text"
@@ -137,8 +140,13 @@ function Home() {
               />
             )}
           </div>
+
+          {/* Display any error messages */}
+          {error && <p className="error-text">{error}</p>}
         </div>
       </div>
+
+      {/* How-to-play modal trigger */}
       <HowToModal />
     </div>
   );

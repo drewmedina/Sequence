@@ -11,7 +11,6 @@ import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import CreateGamePage from "./Pages/CreateGamePage";
 import Play from "./Pages/Play";
-import Test from "./Pages/Test";
 import Header from "./Components/Header";
 import { useAuth } from "./Auth/AuthContext";
 import { createGlobalStyle } from "styled-components";
@@ -55,7 +54,6 @@ function App() {
         { index: true, element: <Home /> },
         { path: "createGame/:gameCode", element: <CreateGamePage /> },
         { path: "play/:gameCode", element: <Play /> },
-        { path: "test", element: <Test /> },
       ],
     },
     {

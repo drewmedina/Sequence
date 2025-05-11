@@ -1,12 +1,14 @@
+// CreateGamePage.jsx
 import React, { useEffect, useState } from "react";
 import socket from "../Firebase/socket";
 import { useAuth } from "../Auth/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateGameUserComponent from "../Components/CreateGameUserComponent";
 import "../Styling/CreateGamePage.css";
-import { Slider, Row, Col, InputNumber, Button } from "antd";
+import { Slider, InputNumber, Button } from "antd";
 import { NumberOutlined, FieldTimeOutlined } from "@ant-design/icons";
 import HowToModal from "../Components/HowTo";
+
 function CreateGamePage() {
   const { currentUser } = useAuth();
   const { gameCode: urlGameCode } = useParams();
@@ -16,6 +18,8 @@ function CreateGamePage() {
   const [gameCode, setGameCode] = useState(urlGameCode || "");
 
   const navigate = useNavigate();
+
+  // Establish socket listeners and fetch initial lobby/users when component mounts or gameCode changes
   useEffect(() => {
     if (!gameCode) {
       socket.on("game-created", (generatedCode) => {
@@ -40,22 +44,27 @@ function CreateGamePage() {
     };
   }, [gameCode]);
 
+  // Handler for changing how many sequences are needed
   const handleSequenceChange = (e) => {
     setSequencesNeeded(Number(e));
   };
 
+  // Handler for changing time per move via slider or input
   const handleTimeChange = (e) => {
     setTimePerMove(Number(e));
   };
 
+  // Emit event to start the game when ready
   const handleStartGame = (e) => {
     socket.emit("start-game", gameCode);
   };
 
+  // Leave the lobby and navigate home
   const handleLeaveGame = (e) => {
     socket.emit("leave-lobby", gameCode, currentUser);
     navigate("/");
   };
+
   return (
     <div className="create-game-container">
       <div className="game-code-box">
@@ -137,14 +146,6 @@ function CreateGamePage() {
                     </Button>
                   ))}
                 </div>
-
-                {/* <InputNumber
-                  min={1}
-                  max={2}
-                  style={{ margin: "0 16px" }}
-                  value={sequencesNeeded}
-                  onChange={handleSequenceChange}
-                /> */}
               </div>
               <div className="time-per-move">
                 <div
@@ -189,12 +190,11 @@ function CreateGamePage() {
               <Button className="leave-button" onClick={handleLeaveGame}>
                 Leave the Game
               </Button>
-
-              {/* <Button onClick={handleLeaveGame}>Leave the Game</Button> */}
             </div>
           </div>
         </div>
       </div>
+      {/* Include HowToModal icon and modal */}
       <HowToModal />
     </div>
   );

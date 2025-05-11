@@ -1,15 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Card from "./GamePieces/Card";
-import styled from "styled-components";
 import { useAuth } from "../Auth/AuthContext";
 
-const HoverCard = styled.div`
-  transition: transform 0.3s;
-  &:hover {
-    transform: translateY(-10px); /* Makes the card lift slightly on hover */
-  }
-`;
-
+// Helper maps to convert between rank/suit codes and display values
 const rankInverse = {
   Two: "2",
   Three: "3",
@@ -34,6 +27,34 @@ const suitInverse = {
   frees: "X",
 };
 
+/**
+ * HoverCard wraps children with hover and highlight effects.
+ */
+function HoverCard({ children, onClick, isHighlighted }) {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div
+      style={{
+        transition: "transform 0.3s",
+        transform: hover ? "translateY(-10px)" : "translateY(0)",
+        boxShadow: isHighlighted
+          ? "0 0 8px 4px rgba(245, 166, 35, 0.8)"
+          : undefined,
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * DefaultGameBoard renders the 10x10 grid of cards rotated and scaled,
+ * allows selecting/highlighting cards based on hover and selection state.
+ */
 function DefaultGameBoard({
   boardData,
   setSelectedCard,
@@ -41,6 +62,8 @@ function DefaultGameBoard({
   selectedHandCard,
 }) {
   const { currentUser } = useAuth();
+
+  // Build the codes for comparison (e.g., "Q♠", "10♦")
   const hoveredCode =
     hoveredCard &&
     (rankInverse[hoveredCard.rank] ?? "J") +
@@ -49,7 +72,7 @@ function DefaultGameBoard({
     selectedHandCard &&
     (rankInverse[selectedHandCard.rank] ?? "J") +
       (suitInverse[selectedHandCard.suit] ?? "1");
-  console.log(selectedCode);
+
   return (
     <div
       style={{
@@ -57,21 +80,21 @@ function DefaultGameBoard({
         gridTemplateColumns: "repeat(10, 1fr)",
         columnGap: "3px",
         rowGap: "14px",
-        transform: "scale(.60) rotate(90deg)",
-        backgroundRepeat: "no-repeat",
+        transform: "scale(.60) rotate(90deg)", // rotate board for vertical orientation
         transformOrigin: "center",
       }}
     >
       {boardData.map((row, rowIndex) =>
         row.map((value, colIndex) => {
+          // value format: "RankSuit#token"
           const [cardValue, token] = value.split("#");
-          const rank = cardValue.slice(0, -1); // Extract number/face (e.g., "10", "K")
-          const suitSymbol = cardValue.slice(-1); // Extract suit symbol (♥, ♦, ♠, ♣)
+          const rank = cardValue.slice(0, -1);
+          const suitSymbol = cardValue.slice(-1);
+
           const isHighlighted = hoveredCode === value || selectedCode === value;
-          const isSelectable = selectedCode === value || selectedCode == "J1";
-          const parts = value.split("#");
-          const tokenPath = parts.length > 1 ? parts[1] : null;
-          // Convert suit symbols to full suit names & folder structure
+          const isSelectable = selectedCode === value || selectedCode === "J1";
+
+          // Map suit symbol back to folder name for Card component
           const suitMap = {
             "♥": "hearts",
             "♦": "diamonds",
@@ -79,10 +102,9 @@ function DefaultGameBoard({
             "♣": "clubs",
             X: "frees",
           };
-          const suitFolder = suitMap[suitSymbol]; // Folder name (e.g., "Hearts")
+          const suitFolder = suitMap[suitSymbol];
 
-          // Convert face card abbreviations to full names
-
+          // Convert numeric/text rank back to full rank string
           const rankMap = {
             2: "Two",
             3: "Three",
@@ -99,10 +121,13 @@ function DefaultGameBoard({
             F: "Free",
           };
           const formattedRank = rankMap[rank] || rank;
+
           return (
             <HoverCard
-              key={rowIndex - colIndex}
+              key={`${rowIndex}-${colIndex}`}
+              isHighlighted={isHighlighted}
               onClick={() => {
+                // Only allow click if card is currently selectable
                 if (isSelectable) {
                   setSelectedCard({
                     row: rowIndex,
@@ -112,20 +137,13 @@ function DefaultGameBoard({
                   });
                 }
               }}
-              style={
-                isHighlighted
-                  ? {
-                      boxShadow: "0 0 8px 4px rgba(245, 166, 35, 0.8)",
-                    }
-                  : {}
-              }
             >
               <Card
                 rank={formattedRank}
                 suit={suitFolder}
-                token={tokenPath}
+                token={token || null}
                 highlighted={isHighlighted}
-              ></Card>
+              />
             </HoverCard>
           );
         })

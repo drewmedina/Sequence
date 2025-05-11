@@ -1,252 +1,138 @@
-import React, { useState } from "react";
+// Header.jsx
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../Auth/AuthContext";
 import { UserOutlined } from "@ant-design/icons";
-import { Avatar, Dropdown } from "antd";
-import { useNavigate, useLocation } from "react-router-dom";
-import { MenuOutlined } from "@ant-design/icons";
-import { Modal } from "antd";
-import styled from "styled-components";
+import { Avatar, Dropdown, Modal } from "antd";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../Firebase/firebase";
-import { useEffect } from "react";
 import ProfileContent from "./ProfileContent";
+import "../Styling/Header.css";
 
-
-
-const LeaderboardContent = styled.div`
-  font-family: 'Cinzel', serif;
-  background-color: #fffbe6;
-  color: #4e3b31;
-  font-size: 16px;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #d8c3a5;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 0;
-    margin: 4px 0;
-    border-radius: 4px;
-  }
-
-  .row:nth-child(even) {
-    background-color: rgba(212, 175, 55, 0.05); /* subtle alt row */
-  }
-
-  .rank {
-    font-weight: bold;
-    width: 25px;
-  }
-
-  .name {
-    flex: 1;
-    padding-left: 8px;
-  }
-
-  .wins {
-    text-align: right;
-    font-weight: 500;
-    min-width: 80px;
-  }
-
-  .first-place {
-    color: #d4af37;
-    font-weight: bold;
-    font-size: 18px;
-  }
-`;
-
-const ProfileContentWrapper = styled.div`
-  font-family: 'Cinzel', serif;
-  background-color: #fffbe6;
-  padding: 16px;
-  border-radius: 8px;
-  color: #4e3b31;
-  border: 1px solid #d8c3a5; 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  max-height: 70vh;
-  overflow-y: auto;
-
-  p {
-    margin: 8px 0;
-  }
-`;
-
-
-function Header() {
+/**
+ * Header component for the Sequence app.
+ * Displays the app title, current user info, and handles profile/leaderboard modals.
+ */
+export default function Header() {
   const { currentUser, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false);
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
+  // Fetch top 5 users sorted by wins whenever the leaderboard modal is opened
   useEffect(() => {
-    if (isLeaderboardVisible) {
-      const fetchLeaderboard = async () => {
-        try {
-          const querySnapshot = await getDocs(collection(db, "users"));
-          const users = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.wins !== undefined) {
-              users.push({ username: data.username || "Unknown", wins: data.wins });
-            }
-          });
-  
-          // Sort by wins descending and take top 3
-          const top3 = users.sort((a, b) => b.wins - a.wins).slice(0, 5);
-          setLeaderboardData(top3);
-        } catch (error) {
-          console.error("Failed to fetch leaderboard:", error);
-        }
-      };
-  
-      fetchLeaderboard();
-    }
+    if (!isLeaderboardVisible) return;
+    (async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "users"));
+        const users = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            username: data.username || "Unknown",
+            wins: data.wins ?? 0,
+          };
+        });
+        setLeaderboardData(users.sort((a, b) => b.wins - a.wins).slice(0, 5));
+      } catch (err) {
+        console.error("Failed to fetch leaderboard:", err);
+      }
+    })();
   }, [isLeaderboardVisible]);
-  
 
+  // Sign the user out
   const handleLogout = async () => {
     try {
       await logout();
-      
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch (err) {
+      console.error("Logout failed:", err);
     }
   };
 
+  // Configuration for the user dropdown menu
   const menuItems = [
     {
       key: "profile",
       label: "Profile",
-      //onClick: () => navigate("/profile"),
-      onClick: () => setIsProfileVisible(true),
+      onClick: () => {
+        setIsProfileVisible(true);
+        setDropdownOpen(false);
+      },
     },
     {
       key: "leaderboard",
       label: "Leaderboard",
-      onClick: () => setIsLeaderboardVisible(true),
+      onClick: () => {
+        setIsLeaderboardVisible(true);
+        setDropdownOpen(false);
+      },
     },
     {
       key: "logout",
       label: "Logout",
-      onClick: handleLogout,
+      onClick: () => {
+        handleLogout();
+        setDropdownOpen(false);
+      },
     },
   ];
 
-
-  console.log(currentUser);
   return (
-    <header
-      className="header"
-      style={{
-        backgroundColor: "#4e3b31",
-        height: "6%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-        borderBottom: "2px solid #000",
-        padding: "2px",
-      }}
-    >
-      {/* <img
-        src="../../Assets/logo.gif"
-        style={{ height: "0%", padding: "4px" }}
-      ></img> */}
-      <h1 style={{
-        color: "#f7fdad",
-        fontSize: "40px",
-        fontWeight: "bold",
-        paddingLeft: "10px",
-        fontFamily: "'Cinzel', serif",
-      }}>
-        Sequence
-      </h1>
-      {currentUser ? (
-        <div
-          style={{
-            fontFamily: "'Cinzel', serif",
-            padding: "10px",
-            fontSize: "25px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            width: "auto",
-            justifyContent: "space-between",
-          }}
-          onMouseEnter={() => setDropdownOpen(true)}
-          onMouseLeave={() => setDropdownOpen(false)}
-        >
-          <p className="username">{currentUser.username}</p>
+    <header className="header">
+      <h1 className="header-title">Sequence</h1>
+
+      {currentUser && (
+        <div className="user-section">
+          <span>{currentUser.username}</span>
+          {/* Avatar that toggles the dropdown menu */}
           <Dropdown
+            trigger={["click"]}
             menu={{ items: menuItems }}
             open={dropdownOpen}
+            onOpenChange={setDropdownOpen}
             placement="bottomRight"
           >
-           <Avatar
-            size="small"
-            src={currentUser?.avatar || undefined}
-            icon={!currentUser?.avatar && <UserOutlined />}
-            style={{ cursor: "pointer" }}
-          />
-
+            <Avatar
+              size="small"
+              src={currentUser.avatar || undefined}
+              icon={!currentUser.avatar && <UserOutlined />}
+              className="avatar-clickable"
+            />
           </Dropdown>
-          {/* <MenuOutlined
-            style={{ fontSize: 22, color: "#f7fdad", cursor: "pointer" }}
-            onClick={() => console.log("Hamburger menu clicked")}
-          /> */}
-
         </div>
-      ) : (
-        <div></div>
       )}
-    
       <Modal
-        title={<span style={{ fontFamily: "'Cinzel', serif", color: "#4e3b31", fontWeight: "bold", fontSize: "20px"}}>Leaderboard</span>}
+        title={<span className="modal-title">Leaderboard</span>}
         open={isLeaderboardVisible}
         onCancel={() => setIsLeaderboardVisible(false)}
         footer={null}
       >
-        <LeaderboardContent>
-          {leaderboardData.map((user, index) => (
-      <div
-      className={`row ${index === 0 ? "first-place" : ""}`}
-      key={user.username}
-    >
-      <span className="rank">{index + 1}.</span>
-      <span className="name">{user.username}</span>
-      <span className="wins">
-        {index === 0 ? "🏆 " : ""}
-        {user.wins} wins
-      </span>
-    </div>
-  ))}
-</LeaderboardContent>
-
+        <div className="leaderboard-content">
+          {leaderboardData.map((user, idx) => (
+            <div
+              key={user.id}
+              className={`leaderboard-row
+                 ${idx % 2 === 1 ? "even" : ""}
+                 ${idx === 0 ? "first-place" : ""}`}
+            >
+              <span className="leaderboard-rank">{idx + 1}.</span>
+              <span className="leaderboard-name">{user.username}</span>
+              <span className="leaderboard-wins">{user.wins} wins</span>
+            </div>
+          ))}
+        </div>
       </Modal>
-
-    <Modal
-      title={<span style={{ fontFamily: "'Cinzel', serif", color: "#4e3b31", fontWeight: "bold", fontSize: "20px" }}>Profile</span>}
-      open={isProfileVisible}
-      onCancel={() => setIsProfileVisible(false)}
-      footer={null}
-      width={500}
-    >
-      <ProfileContentWrapper>
-        <ProfileContent onClose={() => setIsProfileVisible(false)} />
-      </ProfileContentWrapper>
-    </Modal>
-
-      
+      <Modal
+        title={<span className="modal-title">Profile</span>}
+        open={isProfileVisible}
+        onCancel={() => setIsProfileVisible(false)}
+        footer={null}
+        width={500}
+      >
+        <div className="profile-content-wrapper">
+          <ProfileContent onClose={() => setIsProfileVisible(false)} />
+        </div>
+      </Modal>
     </header>
   );
 }
-
-export default Header;

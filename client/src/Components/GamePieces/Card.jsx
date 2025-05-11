@@ -1,33 +1,7 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React from "react";
+import "./../../Styling/Card.css";
 
-const CardBox = styled.div`
-  position: relative;
-  font-size: 8rem;
-  line-height: 0.42;
-  padding: 20px;
-  margin: 0;
-  color: ${({ suit }) =>
-    suit === "hearts" || suit === "diamonds" || suit === "redJokers"
-      ? "red"
-      : "black"};
-  background-color: ${({ highlight }) => (highlight ? "#FFF9C4" : "white")};
-  width: 90px;
-  height: 120px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  box-sizing: border-box;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  padding-top: 20px;
-`;
-
-//add token
-//gamebaord matrix .map function
-//get consistently 7 to show up
-//discard deck visual and draw deck visual
-//make board show up
-//place a token function
+// Mapping from suit and rank to the corresponding card symbol
 const cardSymbols = {
   hearts: {
     Two: "🂲",
@@ -39,6 +13,7 @@ const cardSymbols = {
     Eight: "🂸",
     Nine: "🂹",
     Ten: "🂺",
+    Jack: "🂻",
     Queen: "🂽",
     King: "🂾",
     Ace: "🂱",
@@ -53,6 +28,7 @@ const cardSymbols = {
     Eight: "🃈",
     Nine: "🃉",
     Ten: "🃊",
+    Jack: "🃋",
     Queen: "🃍",
     King: "🃎",
     Ace: "🃁",
@@ -67,12 +43,11 @@ const cardSymbols = {
     Eight: "🃘",
     Nine: "🃙",
     Ten: "🃚",
+    Jack: "🃛",
     Queen: "🃝",
     King: "🃞",
     Ace: "🃑",
-    BJoker1: "🃏︎",
-    BJoker2: "🃏︎",
-    WJoker1: "🃟",
+    Wjoker1: "🃟",
     Wjoker2: "🃟",
   },
   spades: {
@@ -85,6 +60,7 @@ const cardSymbols = {
     Eight: "🂨",
     Nine: "🂩",
     Ten: "🂪",
+    Jack: "🂫",
     Queen: "🂭",
     King: "🂮",
     Ace: "🂡",
@@ -102,37 +78,33 @@ const cardSymbols = {
     RJoker4: "🃟",
   },
   frees: {
-    Free: "🂠", // we can also do 🂠⠀
+    Free: "🂠",
   },
 };
 
+/**
+ * Card component
+ * Renders a playing card symbol, optional token overlay, and highlighting.
+ */
 function Card({ rank, suit, token = null, highlighted }) {
-  if (!token) {
-    return (
-      <CardBox suit={suit} highlight={highlighted}>
-        {cardSymbols[suit][rank]}
-      </CardBox>
-    );
-  } else {
-    return (
-      <CardBox suit={suit} highlight={highlighted}>
-        {cardSymbols[suit][rank]}
-        {token && (
-          <img
-            src={token}
-            alt="token"
-            style={{
-              position: "absolute",
-              width: "100%",
-              height: "70%",
-              pointerEvents: "none",
-              zIndex: 2,
-            }}
-          />
-        )}
-      </CardBox>
-    );
-  }
+  // Determine if the card suit should be styled red
+  const isRed =
+    suit === "hearts" || suit === "diamonds" || suit === "redJokers";
+
+  const classNames = [
+    "card-container",
+    isRed ? "red" : "",
+    highlighted ? "highlighted" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div className={classNames}>
+      {cardSymbols[suit][rank]}
+      {token && <img src={token} alt="token" className="token-img" />}
+    </div>
+  );
 }
 
 export default Card;

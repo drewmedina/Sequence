@@ -1,56 +1,33 @@
-// CreateGameUserComponent.jsx
 import React from "react";
 import Avatar from "antd/es/avatar/Avatar";
 import { UserOutlined } from "@ant-design/icons";
-import styled from "styled-components";
 import { useAuth } from "../Auth/AuthContext";
+import "./../Styling/CreateGameUserComponent.css";
 
-// outer box around each player
-const Wrapper = styled.div`
-  width: auto; /* fixed width prevents squish */
-  padding: 10px;
-  margin: 5px;
-  border-radius: 8px;
-  background-color: ${({ isActive }) => (isActive ? "#ffdf91" : "#f0f0f0")};
-  border: ${({ isActive }) =>
-    isActive ? "2px solid #f5a623" : "1px solid #ccc"};
-  box-shadow: ${({ isActive }) =>
-    isActive ? "0 0 10px rgba(245,166,35,0.6)" : "none"};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: all 0.3s ease;
-`;
-
-// row with avatar + name
-const NameRow = styled.div`
-  width: 100%;
-  background-color: #4e3b31;
-  color: white;
-  padding: 6px 4px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: bold;
-  margin-bottom: 8px;
-`;
+/**
+ * Displays a user card within the game lobby.
+ * Highlights if it's the current user's turn and indicates "you" for the logged-in player.
+ */
 function CreateGameUserComponent({ user, isCurrentTurn }) {
   const { currentUser } = useAuth();
+  // Determine if this card represents the logged-in user
   const isYou = currentUser?.email === user.email;
+
+  // Build CSS class string: always include 'user-card', add 'current-turn' if applicable
+  const cardClasses = ["user-card", isCurrentTurn ? "current-turn" : ""]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <Wrapper isActive={isCurrentTurn}>
-      <NameRow>
-        <Avatar
-          src={user.avatar} /* use src for image URLs */
-          icon={!user.avatar && <UserOutlined />}
-        />
+    <div className={cardClasses}>
+      <div className="user-card-header">
+        {/* Show avatar or fallback icon */}
+        <Avatar src={user.avatar} icon={!user.avatar && <UserOutlined />} />
         <span>
           {user.username} {isYou && "(you)"}
         </span>
-      </NameRow>
-    </Wrapper>
+      </div>
+    </div>
   );
 }
 

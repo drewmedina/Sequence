@@ -1,4 +1,5 @@
 export class GameState {
+  // Maps card suit symbols to internal folder names
   suitMap = {
     "♥": "hearts",
     "♦": "diamonds",
@@ -6,6 +7,8 @@ export class GameState {
     "♣": "clubs",
     X: "frees",
   };
+
+  // Maps card rank identifiers to full rank names
   rankMap = {
     2: "Two",
     3: "Three",
@@ -21,8 +24,10 @@ export class GameState {
     Q: "Queen",
     F: "Free",
   };
+
   constructor(players) {
     this.players = players;
+    // Initial board setup: FX denotes free corners
     this.board = [
       ["FX", "A♦", "K♦", "Q♦", "10♦", "9♦", "8♦", "7♦", "6♦", "FX"],
       ["A♣", "7♠", "6♠", "5♠", "4♠", "3♠", "2♠", "2♥", "3♥", "5♦"],
@@ -36,8 +41,18 @@ export class GameState {
       ["FX", "2♠", "3♠", "4♠", "5♠", "6♠", "7♠", "8♠", "9♠", "FX"],
     ];
     this.discardPile = [];
-    this.deck = this.initializeDeck();
-    this.hands = {};
+    this.deck = this.initializeDeck(); // Build and shuffle full deck
+    this.hands = {
+      [players[0].email]: [
+        { rank: "Two", suit: "clubs" },
+        { rank: "Four", suit: "clubs" },
+        { rank: "BJoker1", suit: "blackJokers" },
+        { rank: "RJoker1", suit: "redJokers" },
+        { rank: "Three", suit: "clubs" },
+        { rank: "Six", suit: "clubs" },
+        { rank: "Five", suit: "clubs" },
+      ],
+    };
     this.currentTurnIndex = 0;
     this.gameStarted = false;
     this.colors = [
@@ -46,9 +61,9 @@ export class GameState {
       "#../../../Assets/greenToken.png",
     ];
     this.winner = null;
-    this.dealHand(players[0]);
   }
 
+  // Create a shuffled deck including jokers
   initializeDeck() {
     const suits = ["spades", "hearts", "diamonds", "clubs"];
     const ranks = [
@@ -70,9 +85,10 @@ export class GameState {
     for (const suit of suits) {
       for (const rank of ranks) {
         deck.push({ rank, suit });
-        deck.push({ rank, suit });
+        deck.push({ rank, suit }); // two of each card
       }
     }
+    // Add jokers
     deck.push({ rank: "BJoker1", suit: "blackJokers" });
     deck.push({ rank: "BJoker2", suit: "blackJokers" });
     deck.push({ rank: "BJoker3", suit: "blackJokers" });
@@ -84,6 +100,7 @@ export class GameState {
     return this.shuffle(deck);
   }
 
+  // Fisher–Yates shuffle implementation
   shuffle(array) {
     return array
       .map((value) => ({ value, sort: Math.random() }))
@@ -91,6 +108,7 @@ export class GameState {
       .map(({ value }) => value);
   }
 
+  // Deal 7 cards to a player's hand
   dealHand(player) {
     this.hands[player.email] = [];
     for (let i = 0; i < 7; i++) {
@@ -102,40 +120,40 @@ export class GameState {
     return this.players[this.currentTurnIndex];
   }
 
+  // Core logic for playing a card (including wild jacks)
   playCard(player, row, col, joker) {
     let hand = this.hands[player.email];
+    // Handle two-eyed jack (place token)
     const blackIdx = hand.findIndex(
       (c) => c.suit === "blackJokers" && c.rank.startsWith("BJoker")
     );
     if (blackIdx !== -1 && joker) {
+      // ... remove token logic ...
       const square = this.board[row][col];
       const [cardCode, marker] = square.split("#");
       if (!marker) {
         throw new Error("No token to remove");
       }
-      // strip the marker off
       this.board[row][col] = cardCode;
-      // discard the joker
       this.discardPile.push(hand.splice(blackIdx, 1)[0]);
       this.drawCard(player);
       this.advanceTurn();
       return;
     }
 
+    // Handle one-eyed jack (remove opponent token)
     const redIdx = hand.findIndex(
       (c) => c.suit === "redJokers" && c.rank.startsWith("RJoker")
     );
     if (redIdx !== -1 && joker) {
+      // ... place token logic ...
       const square = this.board[row][col];
       if (square.includes("#")) {
         throw new Error("Square already occupied");
       }
-      // place this player's token
       const colorTag = this.colors[this.currentTurnIndex];
       this.board[row][col] = square + colorTag;
-      // discard the joker
       this.discardPile.push(hand.splice(redIdx, 1)[0]);
-      // check win
       const winnerColor = this.checkForWin();
       if (winnerColor) {
         this.winner = this.players[this.colors.indexOf(winnerColor)];
@@ -146,6 +164,7 @@ export class GameState {
       return;
     }
 
+    // Regular card play
     const [rawRank, rawSuit] = this.board[row][col]
       .split("#")[0]
       .match(/^([A-Z0-9]+)([♠♥♦♣])$/)
@@ -155,7 +174,6 @@ export class GameState {
       suit: this.suitMap[rawSuit],
     };
 
-    console.log(card, player.username, this.getCurrentPlayer());
     if (
       player.username !== this.getCurrentPlayer().username ||
       player.email != this.getCurrentPlayer().email
@@ -167,10 +185,11 @@ export class GameState {
       (c) => c.rank === card.rank && c.suit === card.suit
     );
     if (index === -1) throw new Error("Card not in hand");
-    console.log("passed");
+
     this.board[row][col] += this.colors[this.currentTurnIndex];
     this.discardPile.push(card);
     this.hands[player.email].splice(index, 1);
+
     const winnerColor = this.checkForWin();
     if (winnerColor) {
       this.winner = this.players[this.colors.indexOf(winnerColor)];
@@ -180,6 +199,7 @@ export class GameState {
     }
   }
 
+  // Draw a card from deck into player's hand
   drawCard(player) {
     if (this.deck.length === 0) return null;
     const card = this.deck.pop();
@@ -187,9 +207,11 @@ export class GameState {
     return card;
   }
 
+  // Rotate turn to next player
   advanceTurn() {
     this.currentTurnIndex = (this.currentTurnIndex + 1) % this.players.length;
   }
+
   addPlayer(player) {
     if (this.players.length < 3) {
       this.players.push(player);
@@ -198,9 +220,12 @@ export class GameState {
       throw new Error("Lobby Full");
     }
   }
+
   getPlayers() {
     return this.players;
   }
+
+  // Check for any sequence of five matching tokens on the board
   checkForWin() {
     const directions = [
       [0, 1], // horizontal →
@@ -213,8 +238,7 @@ export class GameState {
       for (let j = 0; j < this.board[i].length; j++) {
         const squareParts = this.board[i][j].split("#");
         const marker = squareParts[squareParts.length - 1];
-
-        if (marker.length < 1) continue; // skip if no player color marker like "#000000"
+        if (marker.length < 1) continue;
 
         for (const [dx, dy] of directions) {
           let count = 1;
@@ -222,7 +246,6 @@ export class GameState {
           for (let k = 1; k < 5; k++) {
             const ni = i + k * dx;
             const nj = j + k * dy;
-
             if (
               ni >= 0 &&
               nj >= 0 &&

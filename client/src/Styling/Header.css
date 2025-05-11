@@ -1,0 +1,103 @@
+/* Header.css */
+.header {
+  background-color: #4e3b31;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header-title {
+  font-family: "Cinzel", serif;
+  color: #f7fdad;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: "Cinzel", serif;
+  color: #fff;
+}
+
+.avatar-clickable {
+  cursor: pointer;
+}
+
+/* Modal titles */
+.modal-title {
+  font-family: "Cinzel", serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4e3b31;
+}
+
+/* Leaderboard container */
+.leaderboard-content {
+  background: #fff9e6;
+  border-radius: 8px;
+  padding: 16px 24px;
+}
+
+/* Header row (optional) */
+/* .leaderboard-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-bottom: 1px solid #e0d1b5;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  } */
+
+.leaderboard-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-family: "Cinzel", serif;
+}
+
+.leaderboard-row.even {
+  background-color: rgba(212, 175, 55, 0.05);
+}
+
+.leaderboard-rank,
+.leaderboard-name,
+.leaderboard-wins {
+  display: inline-block;
+}
+
+.leaderboard-rank {
+  width: 2ch;
+  font-weight: bold;
+  color: #4e3b31;
+}
+
+.leaderboard-name {
+  flex: 1;
+  padding: 0 12px;
+  text-transform: uppercase;
+  font-size: 1rem;
+  color: #4e3b31;
+}
+
+.leaderboard-wins {
+  white-space: nowrap;
+  font-size: 1rem;
+  color: #4e3b31;
+}
+
+/* First place special */
+.leaderboard-row.first-place .leaderboard-rank,
+.leaderboard-row.first-place .leaderboard-name,
+.leaderboard-row.first-place .leaderboard-wins {
+  color: #d4af37;
+  font-weight: bold;
+}
+
+.leaderboard-row.first-place .leaderboard-wins::before {
+  content: "🏆 ";
+}
